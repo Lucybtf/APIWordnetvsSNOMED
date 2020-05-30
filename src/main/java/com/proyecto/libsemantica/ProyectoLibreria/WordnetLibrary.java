@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -436,7 +437,104 @@ public class WordnetLibrary {
 		return lcssynset;
 	}
 	
+	public static int NotContainsFirstInSecond(HashSet<Synset> a, HashSet<Synset> b) {
+		// TODO Auto-generated method stub
+		int num = 0;
+		for(Synset syn:a){
+			
+			if(!b.contains(syn)){
+				num++;
+			}
+		}
+		return num;
+	}
 
+	public static int Intersection(HashSet<Synset> a, HashSet<Synset> b){
+		int num = 0;
+		for(Synset syn:a){
+			
+			if(b.contains(syn)){
+				num++;
+			}
+		}
+		return num;
+	}
+	
+	/*Repasar valores del árbol*/
+public static HashMap<Long, Synset> getHypernymTree(Synset synset){
+		
+		HashMap<Long, Synset> list = new HashMap<Long, Synset>();
+		try {	
+			PointerTargetTree tree = PointerUtils.getInstance().getHypernymTree(synset);
+			List<PointerTargetNodeList> branchList = tree.toList();			
+			for ( PointerTargetNodeList nodeList : branchList ){				
+				for ( int i = 0; i < nodeList.size(); i++ ){
+					 PointerTargetNode node = (PointerTargetNode) nodeList.get(i);
+					 Synset s = node.getSynset();
+					// System.out.println("WORD: " + s.getWord(0).getLemma());
+					 //System.out.println("KEY: " + s.getKey() +" " + list.get(s.getKey())+"\n");
+					 if (list.get(s.getKey())==null){
+						 list.put((Long)s.getKey(), s);				 
+						 //System.out.println("**: " + s + "\n");
+						
+					 }
+				 }
+			}
+		} catch (JWNLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+
+	/*Repasar valores del árbol*/
+	public static HashSet<Synset> getHypernymTreeList(Synset synset){
+		
+		HashSet<Synset> list = new HashSet<Synset>();
+		try {	
+			PointerTargetTree tree = PointerUtils.getInstance().getHypernymTree(synset);
+			@SuppressWarnings("unchecked")
+			List<PointerTargetNodeList> branchList = tree.toList();			
+			for ( PointerTargetNodeList nodeList : branchList ){				
+				for ( int i = 0; i < nodeList.size(); i++ ){
+					 PointerTargetNode node = (PointerTargetNode) nodeList.get(i);
+					 Synset s = node.getSynset();
+					 //if (s.getKey()==null){
+						// list.put((Long)s.getKey(), s);				 
+						 //System.out.println("**: " + s + "\n");
+						 //System.out.println("--: " + s.getKey() + "\n");
+						 list.add(s);
+					 //}
+					 
+				 }
+			}
+		} catch (JWNLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
+	/*Repasar valores del árbol*/
+	public static HashSet<Synset> getHyponymsTreeList(Synset synset){
+		
+		HashSet<Synset> list = new HashSet<Synset>();
+		try {	
+			PointerTargetTree tree = PointerUtils.getInstance().getHyponymTree(synset);
+			@SuppressWarnings("unchecked")
+			List<PointerTargetNodeList> branchList = tree.toList();			
+			for ( PointerTargetNodeList nodeList : branchList ){				
+				for ( int i = 0; i < nodeList.size(); i++ ){
+					 PointerTargetNode node = (PointerTargetNode) nodeList.get(i);
+					 Synset s = node.getSynset();
+					 list.add(s);
+				 }
+			}
+		} catch (JWNLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 	
 	 public static void main(String[] arg) throws JWNLException{
 	        WordnetLibrary w = new WordnetLibrary();
@@ -486,8 +584,61 @@ public class WordnetLibrary {
          Synset lcs = getLeastCommonSubsumer(s1,s2);
          System.out.print("\nLCS->"+lcs.getWord(0).getLemma()+"DEPTH:"+depthOfSynset(lcs));
          
-        
+         
+       
+		/*HashMap<Long, Synset> listcancer = getHypernymTree(s1);
+		HashMap<Long, Synset> listdisease = getHypernymTree(s2);
+		
+
+		Iterator iterator = listcancer.entrySet().iterator();
+	    while (iterator.hasNext()) {
+	            Map.Entry it = (Map.Entry) iterator.next();
+	        //  System.out.println("Key: "+me2.getKey() + " & Value: " + me2.getValue());
+	            Synset value = (Synset)it.getValue();
+	            System.out.println("\nSYNSET Key 1: "+it.getKey()+" " + "Value: " + value.getWord(0).getLemma()+"\n");
+	    }
+		System.out.print("\n\n");
+		System.out.print("\nsynset 2 "+listdisease);
+		Iterator iterator2 = listdisease.entrySet().iterator();
+	    while (iterator2.hasNext()) {
+	            Map.Entry it2 = (Map.Entry) iterator2.next();
+	            Synset value2 = (Synset)it2.getValue();
+	            System.out.println("\nSYNSET Key 2 :"+it2.getKey()+" " + "Value: " + value2.getWord(0).getLemma()+"\n");
+	    }*/
+		
+	   HashSet<Synset> cancersynsets = getHypernymTreeList(s1);
+	   HashSet<Synset> diseasesynsets = getHypernymTreeList(s2);
+	    
+	   System.out.print("Blood synsets:");
+	    for(Synset a:cancersynsets){
+	    	System.out.print("\nFINAL LISTA BLOOD->"+ a.getWord(0).getLemma()+"\n");
+	    }
+	    
+	    System.out.print("Cell synsets:");
+	    for(Synset b:diseasesynsets){
+	    	System.out.print("\nFINAL LISTA CELL->"+ b.getWord(0).getLemma()+"\n");
+	    }
+		
+	
+      
+		int numinsideAinB = NotContainsFirstInSecond(cancersynsets, diseasesynsets);
+		int numinsideBinA = NotContainsFirstInSecond(diseasesynsets, cancersynsets);
+		int intersection = Intersection(cancersynsets, diseasesynsets);
+		System.out.print("\n\nContiene "+numinsideAinB +" elementos de A en B");
+		System.out.print("\n\nContiene "+numinsideBinA +" elementos de B en A");
+		System.out.print("\n\nInteresection "+ intersection);
+		
+		double num_frac =(double)(numinsideAinB+numinsideBinA)/(double)(numinsideAinB+numinsideBinA+intersection);
+		double distance_sanchez = Math.log10(1+num_frac)/Math.log10(2);
+		System.out.print("\nDistancia de Sanchez:"+distance_sanchez);
+         
+		
+		HashSet<Synset> hyponymsynsets = getHyponymsTreeList(s1);
+		for(Synset hypo:hyponymsynsets){
+		    	System.out.print("\n\nLISTA HYPONYMS->"+ hypo.getWord(0).getLemma()+"\n");
+		    }
 	 }
+
 
 
 

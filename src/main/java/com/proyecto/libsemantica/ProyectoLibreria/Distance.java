@@ -1,5 +1,7 @@
 package com.proyecto.libsemantica.ProyectoLibreria;
 
+import java.util.HashSet;
+
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
@@ -40,6 +42,33 @@ public class Distance {
 		 return distance;
 	}
 	 
+	 
+	public static double Sanchez_Similarity(String word1, POS pos, String word2, POS pos2){
+		
+		  
+		 WordnetLibrary dictionary = new WordnetLibrary();
+		 Synset s1 = dictionary.getSynset(word1,pos);
+		 Synset s2 = dictionary.getSynset(word2,pos2);
+		 
+		 HashSet<Synset> S1synsets =  dictionary.getHypernymTreeList(s1);
+		 HashSet<Synset> S2synsets =  dictionary.getHypernymTreeList(s2);
+		
+	      
+		 int numinsideAinB = dictionary.NotContainsFirstInSecond(S1synsets, S2synsets);
+		 int numinsideBinA = dictionary.NotContainsFirstInSecond(S2synsets, S1synsets);;
+	     int intersection = dictionary.Intersection(S1synsets, S2synsets);
+		 System.out.print("\n\nContiene "+numinsideAinB +" elementos de A en B");
+		 System.out.print("\n\nContiene "+numinsideBinA +" elementos de B en A");
+		 System.out.print("\n\nInteresection "+ intersection);
+			
+		double num_frac =(double)(numinsideAinB+numinsideBinA)/(double)(numinsideAinB+numinsideBinA+intersection);
+		double distance_sanchez = Math.log10(1+num_frac)/Math.log10(2);
+	//	System.out.print("Distancia de Sanchez:"+distance_sanchez);
+	         
+		
+		return distance_sanchez;
+		
+	}
 	 public static void main(String[] arg) throws JWNLException{
 	 
 	
@@ -48,6 +77,9 @@ public class Distance {
 	 
 	 double wp = WPSimilarity(word, pos, word2, pos);
      System.out.print("\n\nLa similitud de Wu and Palmer es:"+wp+"\n");
+     
+     double sanchez = Sanchez_Similarity(word, pos, word2, pos);
+     System.out.print("\n\nLa similitud de Sanchez es:"+sanchez+"\n");
      
 	 }
 
