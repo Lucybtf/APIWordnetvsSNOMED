@@ -42,7 +42,11 @@ public class Distance {
 		 return distance;
 	}
 	 
-	 
+	public static double Distance_WP(String word1, POS pos, String word2, POS pos2){
+		return 1-WPSimilarity(word1, pos, word2, pos2);
+	}
+	
+	
 	public static double Sanchez_Similarity(String word1, POS pos, String word2, POS pos2){
 		
 		  
@@ -55,7 +59,7 @@ public class Distance {
 		
 	      
 		 int numinsideAinB = dictionary.NotContainsFirstInSecond(S1synsets, S2synsets);
-		 int numinsideBinA = dictionary.NotContainsFirstInSecond(S2synsets, S1synsets);;
+		 int numinsideBinA = dictionary.NotContainsFirstInSecond(S2synsets, S1synsets);
 	     int intersection = dictionary.Intersection(S1synsets, S2synsets);
 		 System.out.print("\n\nContiene "+numinsideAinB +" elementos de A en B");
 		 System.out.print("\n\nContiene "+numinsideBinA +" elementos de B en A");
@@ -76,7 +80,9 @@ public class Distance {
 	 final POS pos = POS.NOUN;
 	 
 	 double wp = WPSimilarity(word, pos, word2, pos);
+	 double distance_wp = Distance_WP(word, pos, word2, pos);
      System.out.print("\n\nLa similitud de Wu and Palmer es:"+wp+"\n");
+     System.out.print("\n\nLa similitud de Wu and Palmer es:"+distance_wp+"\n");
      
      double sanchez = Sanchez_Similarity(word, pos, word2, pos);
      System.out.print("\n\nLa similitud de Sanchez es:"+sanchez+"\n");

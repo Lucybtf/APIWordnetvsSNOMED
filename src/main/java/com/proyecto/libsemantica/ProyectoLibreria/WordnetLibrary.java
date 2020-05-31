@@ -536,6 +536,9 @@ public static HashMap<Long, Synset> getHypernymTree(Synset synset){
 		return list;
 	}
 	
+	
+
+	
 	 public static void main(String[] arg) throws JWNLException{
 	        WordnetLibrary w = new WordnetLibrary();
 	        logdescription.debug("HOLA CREADO WORDNET");
@@ -632,13 +635,28 @@ public static HashMap<Long, Synset> getHypernymTree(Synset synset){
 		double distance_sanchez = Math.log10(1+num_frac)/Math.log10(2);
 		System.out.print("\nDistancia de Sanchez:"+distance_sanchez);
          
-		
+		int leaves = 0;
 		HashSet<Synset> hyponymsynsets = getHyponymsTreeList(s1);
 		for(Synset hypo:hyponymsynsets){
-		    	System.out.print("\n\nLISTA HYPONYMS->"+ hypo.getWord(0).getLemma()+"\n");
-		    }
+		    	System.out.print("\n\nLISTA HYPONYMS->"+ hypo.getWord(0).getLemma()+"\t");
+		    	ArrayList<String> hijos = getHyponyms(pos.NOUN, hypo.getWord(0).getLemma());
+		    	
+		    	System.out.print("HIJOS->"+hijos.size()+"\n");
+		    	if(hijos.size()==0){
+		    		leaves++;
+		    	}
+		    	
+		}
+		HashSet<Synset> hypernymssynsets = getHyponymsTreeList(s1);
+		System.out.print("\nNUMERO DE HOJAS->"+leaves+" "+"NUMERO DE SUBSUBMER->"+hypernymssynsets.size());
+		double icvalue = 0.0;
+		double numer= ((double) leaves/(double)hypernymssynsets.size())+1;
+		System.out.print("Numerador->"+numer);
+		//icvalue = -Math.log10(resultdiv);
+		
+		
 	 }
-
+	
 
 
 
