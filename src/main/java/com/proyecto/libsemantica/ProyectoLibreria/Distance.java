@@ -27,7 +27,7 @@ public class Distance {
 			depth2 = dictionary.depthOfSynset(s2);
 			depthtotal = depth+depth2;
 			
-			 /*Calculamos el Least Common Synset y su profundida*/
+			 /*Calculamos el Least Common Synset y su profundidad*/
 			lcs = dictionary.getLeastCommonSubsumer(s1,s2);
 		    depthlcs =dictionary.depthOfSynset(lcs);
 		    

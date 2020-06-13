@@ -14,7 +14,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import jersey.repackaged.com.google.common.collect.Sets;
 import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.IndexWord;
@@ -215,22 +215,32 @@ public class WordnetLibrary {
 	public static ArrayList<String> getHyponyms(POS pos, String word){
 		ArrayList<String> hyponyms = new ArrayList<String>();
 		ArrayList<Synset> hyp =new ArrayList<Synset>();
+		Synset[] synsets = null;
 		try {
 			IndexWord i = dic.getIndexWord(pos, word);
-			Synset s = i.getSense(1);
-			if(s == null) return null;
-			
-			PointerTargetNodeList listhyponyms = PointerUtils.getInstance().getDirectHyponyms(s);
-			//System.out.print("TAM"+listhyponyms.size());
-			for(int it = 0; it<listhyponyms.size();it++){
-				PointerTargetNode node = (PointerTargetNode) listhyponyms.get(it);
-				Synset current = node.getSynset();
-				//System.out.print("Current"+current+"\n");
-				hyp.add(current);
+			//System.out.print("\n\n I"+i);
+			if(i !=null){
+			synsets = i.getSenses();
+			for(Synset a:synsets){
+				//System.out.print("SENTIDOS"+i.getSenseCount());
+				//Synset s = i.getSense(1);
+				if(a == null) return null;
+			//	System.out.print("\n\nTHING"+a.toString());
 				
+				PointerTargetNodeList listhyponyms = PointerUtils.getInstance().getDirectHyponyms(a);
+			//	System.out.print("TAM"+listhyponyms.size());
+				for(int it = 0; it<listhyponyms.size();it++){
+					PointerTargetNode node = (PointerTargetNode) listhyponyms.get(it);
+					Synset current = node.getSynset();
+					//System.out.print("Current"+current+"\n");
+					hyp.add(current);
+					
+				}
+			}
+			
 			}
 			hyponyms = getLemmas(hyp);
-			
+		
 		} catch (JWNLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -557,7 +567,7 @@ public static HashMap<Long, Synset> getHypernymTree(Synset synset){
          
            
            /* HIPONYMS*/
-           ArrayList<String> testhyponyms = getHyponyms(pos, word);
+           ArrayList<String> testhyponyms = getHyponyms(pos, "thing");
            System.out.print("\nLista hyponyms"+":"+testhyponyms+"\n");
            
            /*HOLONYMS*/
@@ -587,27 +597,7 @@ public static HashMap<Long, Synset> getHypernymTree(Synset synset){
          Synset lcs = getLeastCommonSubsumer(s1,s2);
          System.out.print("\nLCS->"+lcs.getWord(0).getLemma()+"DEPTH:"+depthOfSynset(lcs));
          
-         
-       
-		/*HashMap<Long, Synset> listcancer = getHypernymTree(s1);
-		HashMap<Long, Synset> listdisease = getHypernymTree(s2);
-		
-
-		Iterator iterator = listcancer.entrySet().iterator();
-	    while (iterator.hasNext()) {
-	            Map.Entry it = (Map.Entry) iterator.next();
-	        //  System.out.println("Key: "+me2.getKey() + " & Value: " + me2.getValue());
-	            Synset value = (Synset)it.getValue();
-	            System.out.println("\nSYNSET Key 1: "+it.getKey()+" " + "Value: " + value.getWord(0).getLemma()+"\n");
-	    }
-		System.out.print("\n\n");
-		System.out.print("\nsynset 2 "+listdisease);
-		Iterator iterator2 = listdisease.entrySet().iterator();
-	    while (iterator2.hasNext()) {
-	            Map.Entry it2 = (Map.Entry) iterator2.next();
-	            Synset value2 = (Synset)it2.getValue();
-	            System.out.println("\nSYNSET Key 2 :"+it2.getKey()+" " + "Value: " + value2.getWord(0).getLemma()+"\n");
-	    }*/
+  
 		
 	   HashSet<Synset> cancersynsets = getHypernymTreeList(s1);
 	   HashSet<Synset> diseasesynsets = getHypernymTreeList(s2);
@@ -635,6 +625,8 @@ public static HashMap<Long, Synset> getHypernymTree(Synset synset){
 		double distance_sanchez = Math.log10(1+num_frac)/Math.log10(2);
 		System.out.print("\nDistancia de Sanchez:"+distance_sanchez);
          
+		
+		/*IC Sanchez(c) =-log( (|leaves(c)|/|hypernyms(c)|+1)/max_leaves+1))*/
 		int leaves = 0;
 		HashSet<Synset> hyponymsynsets = getHyponymsTreeList(s1);
 		for(Synset hypo:hyponymsynsets){
@@ -647,14 +639,32 @@ public static HashMap<Long, Synset> getHypernymTree(Synset synset){
 		    	}
 		    	
 		}
-		HashSet<Synset> hypernymssynsets = getHyponymsTreeList(s1);
-		System.out.print("\nNUMERO DE HOJAS->"+leaves+" "+"NUMERO DE SUBSUBMER->"+hypernymssynsets.size());
+		HashSet<Synset> hypernymssynsets = getHypernymTreeList(s1);
+		Set<Synset> alltaxonomy = Sets.union(hyponymsynsets, hypernymssynsets);
+	
+		
+		System.out.print("HIPONIMOS "+hyponymsynsets.size()+"HIPERNOMIMOS "+ hypernymssynsets.size()+"TAM TOTAL "+ alltaxonomy.size());
+		int max_leaves =0;
+		for(Synset h:alltaxonomy){
+	    //	System.out.print("\n\nLISTA HYPONYMS->"+ h.getWord(0).getLemma()+"\t");
+	    	ArrayList<String> hijosmax = getHyponyms(pos.NOUN, h.getWord(0).getLemma());
+	    	
+	    	//System.out.print("HIJOS->"+hijosmax.size()+"\n");
+	    	if(hijosmax.size()==0){
+	    		max_leaves++;
+	    	}
+	    	
+		}
+		
+		System.out.print("\nNUMERO MAX DE HOJAS EN LA TAXONOMIA->"+ max_leaves+" NUMERO DE HOJAS->"+leaves+" "+"NUMERO DE SUBSUBMER->"+hypernymssynsets.size());
 		double icvalue = 0.0;
 		double numer= ((double) leaves/(double)hypernymssynsets.size())+1;
 		System.out.print("Numerador->"+numer);
+		//double divisor =
 		//icvalue = -Math.log10(resultdiv);
 		
-		
+		 ArrayList<String> testhyponyms2 = getHyponyms(pos, "thing");
+         System.out.print("\nLista hyponyms"+":"+testhyponyms2+"\n");
 	 }
 	
 
