@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -37,12 +38,13 @@ import net.didion.jwnl.data.relationship.Relationship;
 import net.didion.jwnl.data.relationship.RelationshipFinder;
 import net.didion.jwnl.data.relationship.RelationshipList;
 import net.didion.jwnl.dictionary.Dictionary;
+import net.didion.jwnl.util.TypeCheckingList;
 
 public class WordnetLibrary {
 
 	private static final Logger logdescription = LoggerFactory.getLogger(WordnetLibrary.class.getName());
 	private String propertiesFile = "C:\\Users\\67382523\\workspace_tfm\\ProyectoLibreria\\config\\file_properties.xml";
-	private static Dictionary dic;
+	private Dictionary dic;
 	
 	/* WordnetLibrary(): Constructor de la libreria*/
 	WordnetLibrary(){
@@ -54,14 +56,13 @@ public class WordnetLibrary {
 	        }
 	}
 	
-	static Synset getSynset(long offset) throws JWNLException{
-		System.out.print("Este es por offset");
-		Synset synset = dic.getSynsetAt(POS.NOUN, offset);
-		return synset;
+	
+	public Synset getSynset(long offSet) throws JWNLException{
 		
+		return dic.getSynsetAt(POS.NOUN, offSet);
 	}
 
-	public static Synset getSynset(String word, POS pos) {
+	public Synset getSynset(String word, POS pos) {
 		// TODO Auto-generated method stub
 		Synset synset = null;
 		try {
@@ -75,11 +76,11 @@ public class WordnetLibrary {
 	}
 	
 	
-	static String  getSense(Synset synset){
+	public String  getSense(Synset synset){
 		return synset.getGloss();
 	}
 	
-	static String  getSense(long offset) throws JWNLException{
+	public String  getSense(long offset) throws JWNLException{
 		System.out.print("SYNSET"+offset);
 		Synset s =dic.getSynsetAt(POS.NOUN, offset);
 		String sense =s.getGloss();
@@ -89,7 +90,7 @@ public class WordnetLibrary {
 	
 	
 	 /* getSenses: Descripciones de un palabra(word) por tipo de categoría sintáctica(pos)*/
-	static void getSense(POS pos,String word, int sense){
+	 public void getSense(POS pos,String word, int sense){
 		try {
 			//Obtenemos el índice de la palabra
 			final IndexWord index = dic.lookupIndexWord(pos, word);
@@ -121,7 +122,7 @@ public class WordnetLibrary {
 
 	
 	/* getNumberSenses: Obtienes el número de significados de cada palabra*/
-	public static int getNumberSenses(POS pos, String word){
+	public int getNumberSenses(POS pos, String word){
 		IndexWord i = null;
 		try {
 		 i = dic.getIndexWord(pos, word);
@@ -135,7 +136,7 @@ public class WordnetLibrary {
 	}
 	
 	/*getLemma: Las distintas formas de obtener una forma de una palabra*/
-	public static String getLemma(POS pos, String word){
+	public String getLemma(POS pos, String word){
 		if (dic == null) return null;
 		
 		IndexWord i = null;
@@ -151,7 +152,7 @@ public class WordnetLibrary {
 	}
 	
 	/*getLemma: Las distintas formas de obtener una forma de una palabra*/
-	public static ArrayList<String> getLemmas(ArrayList<Synset> synsets){
+	public  ArrayList<String> getLemmas(ArrayList<Synset> synsets){
 		HashSet<String> lemmaSet = new HashSet<String>();
 		ArrayList<String> lemmasaux = new ArrayList<String>();
 		for (Synset synset : synsets) {
@@ -184,7 +185,7 @@ public class WordnetLibrary {
 	 * 5. Cohiponimia*/
 	
 	
-	public static ArrayList<String> getSynonyms(POS pos, String word){
+	public ArrayList<String> getSynonyms(POS pos, String word){
 		
 		ArrayList<String> synonyms = new ArrayList<String>();
 		Synset[] s = null;
@@ -215,7 +216,7 @@ public class WordnetLibrary {
 	}
 	
 	
-	public static ArrayList<String> getSynonyms(Synset synset){
+	public ArrayList<String> getSynonyms(Synset synset){
 		ArrayList<String> synonyms = new ArrayList<String>();
 		Word[] words = synset.getWords();
 		for(Word w1: words){
@@ -228,7 +229,7 @@ public class WordnetLibrary {
 		return synonyms;
 	}
 	
-	public static ArrayList<String> getSynonyms(long offset) throws JWNLException{
+	public ArrayList<String> getSynonyms(long offset) throws JWNLException{
 		
 		ArrayList<String> synonyms = new ArrayList<String>();
 		Synset synset = getSynset(offset);
@@ -243,7 +244,7 @@ public class WordnetLibrary {
 		return synonyms;
 	}
 	
-	public static ArrayList<String> getHypernyms(POS pos, String word){
+	public ArrayList<String> getHypernyms(POS pos, String word){
 		ArrayList<String> hypernyms = null;
 		ArrayList<Synset> hyp =new ArrayList<Synset>();
 		try {
@@ -270,7 +271,7 @@ public class WordnetLibrary {
 	}
 	
 	
-	public static ArrayList<Synset> getHypernyms(Synset synset) throws JWNLException{
+	public ArrayList<Synset> getHypernyms(Synset synset) throws JWNLException{
 		ArrayList<Synset> hyp =new ArrayList<Synset>();
 		PointerTargetNodeList listhyponyms = PointerUtils.getInstance().getDirectHypernyms(synset);
 		//	System.out.print("TAM"+listhyponyms.size());
@@ -284,12 +285,12 @@ public class WordnetLibrary {
 		return hyp;
 	}
 	
-	public static void getHypernyms(long offset){
+	public void getHypernyms(long offset){
 		
 		
 	}
 	
-	public static ArrayList<String> getHyponyms(POS pos, String word){
+	public ArrayList<String> getHyponyms(POS pos, String word){
 		ArrayList<String> hyponyms = new ArrayList<String>();
 		ArrayList<Synset> hyp =new ArrayList<Synset>();
 		Synset[] synsets = null;
@@ -326,7 +327,7 @@ public class WordnetLibrary {
 		
 	}
 		
-	public static ArrayList<Synset> getHyponyms(Synset synset) throws JWNLException{
+	public ArrayList<Synset> getHyponyms(Synset synset) throws JWNLException{
 		ArrayList<Synset> hyp =new ArrayList<Synset>();
 		PointerTargetNodeList listhyponyms = PointerUtils.getInstance().getDirectHyponyms(synset);
 		//	System.out.print("TAM"+listhyponyms.size());
@@ -341,7 +342,7 @@ public class WordnetLibrary {
 		
 	}
 	
-	public static ArrayList<Synset> getHyponyms(long offset) throws JWNLException{
+	public ArrayList<Synset> getHyponyms(long offset) throws JWNLException{
 		Synset synset =getSynset(offset);
 		ArrayList<Synset> hyp =new ArrayList<Synset>();
 		PointerTargetNodeList listhyponyms = PointerUtils.getInstance().getDirectHyponyms(synset);
@@ -356,7 +357,7 @@ public class WordnetLibrary {
 		return hyp;
 	}
 	
-	public static ArrayList<String> getListofWords(PointerTargetNodeList list){	
+	public ArrayList<String> getListofWords(PointerTargetNodeList list){	
 		ArrayList<String> result = new ArrayList<String>();
 		Iterator it = list.iterator();
 		while(it.hasNext()){
@@ -372,7 +373,7 @@ public class WordnetLibrary {
 		return result;
 	}
 	
-	public static ArrayList<String> getHolonyms(POS pos, String word){
+	public ArrayList<String> getHolonyms(POS pos, String word){
 		ArrayList<String> holonyms = new ArrayList<String>();
 		IndexWordSet i = null;
 		
@@ -408,7 +409,7 @@ public class WordnetLibrary {
 		return holonyms;
 	}
 
-	public static ArrayList<String> getHolonyms(Synset synset) throws JWNLException{
+	public ArrayList<String> getHolonyms(Synset synset) throws JWNLException{
 		
 		ArrayList<String> holonyms = new ArrayList<String>();
 		PointerTargetNodeList listpartof = PointerUtils.getInstance().getPartHolonyms(synset);
@@ -421,7 +422,7 @@ public class WordnetLibrary {
 		return holonyms;
 	}
 	
-	public static ArrayList<String> getHolonyms(long offset) throws JWNLException{
+	public ArrayList<String> getHolonyms(long offset) throws JWNLException{
 		Synset synset = getSynset(offset);
 		ArrayList<String> holonyms = new ArrayList<String>();
 		PointerTargetNodeList listpartof = PointerUtils.getInstance().getPartHolonyms(synset);
@@ -435,7 +436,7 @@ public class WordnetLibrary {
 		
 	}
 
-	public static ArrayList<String> getMeronyms(POS pos, String word){
+	public ArrayList<String> getMeronyms(POS pos, String word){
 		ArrayList<String> meronyms = new ArrayList<String>();
 		IndexWordSet i = null;
 		
@@ -465,7 +466,7 @@ public class WordnetLibrary {
 		return meronyms;
 	}
 	
-	public static ArrayList<String> getMeronyms(Synset synset) throws JWNLException{
+	public ArrayList<String> getMeronyms(Synset synset) throws JWNLException{
 		ArrayList<String> meronyms = new ArrayList<String>();
 		PointerTargetNodeList listpartof = PointerUtils.getInstance().getPartMeronyms(synset);
 		PointerTargetNodeList listmemberof = PointerUtils.getInstance().getMemberMeronyms(synset);
@@ -477,17 +478,17 @@ public class WordnetLibrary {
 		return meronyms;
 	}
 	
-	public static void getMeronyms(long offset){
+	public void getMeronyms(long offset){
 		
 		
 	}
 	
-	public static boolean isEntityNode(Synset s){
+	public boolean isEntityNode(Synset s){
 		//if(s.getWord(0).getLemma().equals("entity")?true:false);
 		return ((s.getWord(0).getLemma().equals("entity"))?true:false);
 	}
 	
-	public static ArrayList<Synset> getPathToEntity(Synset s){
+	public ArrayList<Synset> getPathToEntity(Synset s){
 		ArrayList<Synset> nodepath = new ArrayList<Synset>();
 		try {
 			if(isEntityNode(s)){
@@ -508,7 +509,7 @@ public class WordnetLibrary {
 	}	
 	
 
-	public static ArrayList<Synset> getPathBetweenSynsets(Synset synset1, Synset synset2){
+	public ArrayList<Synset> getPathBetweenSynsets(Synset synset1, Synset synset2){
 		ArrayList<Synset> pathsynsets = new ArrayList<Synset>();
 		try {			
 			if(isEntityNode(synset1) && isEntityNode(synset2)){
@@ -544,8 +545,11 @@ public class WordnetLibrary {
 		return pathsynsets;
 	}
 	
+	public int getNumLinksBetweenSynsets(Synset s1, Synset s2){
+		return getPathBetweenSynsets(s1, s2).size()-1;
+	}
 	
-	public static int depthOfSynset(Synset a) throws JWNLException{
+	public int depthOfSynset(Synset a) throws JWNLException{
 		
 		PointerTargetTree tree;
 		int max = -999;
@@ -563,7 +567,56 @@ public class WordnetLibrary {
 		return max;
 	}
 	
-	public static int getNodesToEntity(Synset synset){
+	public int depthOfSynset(Synset a, LinkedHashMap<Synset, ArrayList<Synset>> tree) throws JWNLException{
+		System.out.print("\n\nENTRA EN 1 function");
+		 //Set<Entry<Synset, ArrayList<Synset>>> mapSet = tree.entrySet();
+	    int depth = 0;
+		Map.Entry<Synset, ArrayList<Synset>> rootnode = (new ArrayList<Map.Entry<Synset, ArrayList<Synset>>>(tree.entrySet())).get(0);
+		if(!tree.containsKey(a))
+			return -1;
+		if(rootnode.getKey().equals(a))
+			return 0;
+		else
+		//System.out.print("\n\ndepth FINAL"+depthnodes(a, rootnode.getValue(), depth+1,tree)+"\n");
+		return depthnodes(a, rootnode.getValue(), 1,tree);
+		//	System.out.print("\n\nDEPTH"+depth);
+		//}		
+		//return depth;
+	}
+	
+	
+
+	private int depthnodes(Synset a, ArrayList<Synset> nodeslevel, int depth, LinkedHashMap<Synset, ArrayList<Synset>> tree) {
+		// TODO Auto-generated method stub
+		System.out.print("\nENTRA NODOS HIJOS->"+ nodeslevel.size()+" depth"+depth+" synset a "+ a.getWord(0).getLemma()+ a.getOffset()+"\n");
+	   ArrayList<Synset> newlevelnodes = new ArrayList<Synset>();
+	   if(nodeslevel.size()>0){
+	   for(Synset node: nodeslevel){
+		   ArrayList<Synset> hijos =tree.get(node);
+		 //  System.out.print("HIJOS->"+tree.get(node));
+		   if(hijos !=null)
+			   newlevelnodes.addAll(hijos);
+	   }
+	 //  System.out.print("\nSIGUIENTE NIVEL->"+ newlevelnodes+"\n");
+		   //System.out.print("Nood hijos llenos"+nodeslevel+"\n");
+	   if(!nodeslevel.contains(a)){
+		 
+		   System.out.print("Not Contains"+depth);
+		  
+		    return depthnodes(a, newlevelnodes, depth+1,tree);
+		  
+	   }
+	   }
+	   
+	   
+	   
+	  
+	   System.out.print("DEpTHNODOS->"+depth);
+	   return depth;
+	}
+
+
+	public int getNodesToEntity(Synset synset){
 		if(synset.getWord(0).toString().equalsIgnoreCase("entity")) return 1;
 		try {
 			PointerTargetTree pt = PointerUtils.getInstance().getHypernymTree(synset);
@@ -576,7 +629,7 @@ public class WordnetLibrary {
 	}
 	
 	
-	public static Synset getLeastCommonSubsumer(Synset a, Synset b) throws JWNLException {
+	public Synset getLeastCommonSubsumer(Synset a, Synset b) throws JWNLException {
 		
 		int depth, depthMin;
 		Synset lcssynset = null ;
@@ -598,7 +651,7 @@ public class WordnetLibrary {
 		return lcssynset;
 	}
 	
-	public static int NotContainsFirstInSecond(HashSet<Synset> a, HashSet<Synset> b) {
+	public int NotContainsFirstInSecond(HashSet<Synset> a, HashSet<Synset> b) {
 		// TODO Auto-generated method stub
 		int num = 0;
 		for(Synset syn:a){
@@ -610,7 +663,7 @@ public class WordnetLibrary {
 		return num;
 	}
 
-	public static int Intersection(HashSet<Synset> a, HashSet<Synset> b){
+	public int Intersection(HashSet<Synset> a, HashSet<Synset> b){
 		int num = 0;
 		for(Synset syn:a){
 			
@@ -622,7 +675,7 @@ public class WordnetLibrary {
 	}
 	
 	/*Repasar valores del árbol*/
-	public static HashMap<Long, Synset> getHypernymTree(Synset synset){
+	public HashMap<Long, Synset> getHypernymTree(Synset synset){
 		
 		HashMap<Long, Synset> list = new HashMap<Long, Synset>();
 		try {	
@@ -650,7 +703,7 @@ public class WordnetLibrary {
 
 
 	/*Repasar valores del árbol*/
-	public static HashSet<Synset> getHypernymTreeList(Synset synset){
+	public  HashSet<Synset> getHypernymTreeList(Synset synset){
 		
 		HashSet<Synset> list = new HashSet<Synset>();
 		try {	
@@ -672,7 +725,7 @@ public class WordnetLibrary {
 	
 	
 	/*Repasar valores del árbol*/
-	public static HashSet<Synset> getHyponymsTreeList(Synset synset){
+	public HashSet<Synset> getHyponymsTreeList(Synset synset){
 		
 		HashSet<Synset> list = new HashSet<Synset>();
 		try {	
@@ -692,43 +745,39 @@ public class WordnetLibrary {
 		return list;
 	}
 	
-	public static ArrayList<Synset> RecorrerNodos(int pos, ArrayList<Synset> hijos,int altura, LinkedHashMap<Synset, ArrayList<Synset>> treeResult) throws JWNLException{
+	public ArrayList<Synset> RecorrerNodos(int pos, ArrayList<Synset> hijos,int altura, LinkedHashMap<Synset, ArrayList<Synset>> treeResult) throws JWNLException{
 		
 		if (pos < hijos.size()) { 
-			System.out.print("\nNODO->"+hijos.get(pos).getWord(0).getLemma()+ "  HIJOS"+hijos.size()+" ALTURA->"+altura);
+			//System.out.print("\nNODO->"+hijos.get(pos).getWord(0).getLemma()+ "  HIJOS"+hijos.size()+" ALTURA->"+altura);
 			
 			if( altura>=0){
 				treeResult.put(hijos.get(pos), getHyponyms(hijos.get(pos)));
-				System.out.print("\nALTURA DENTRO DE RECORRER NODOS->"+altura+"\n");
+				//System.out.print("\nALTURA DENTRO DE RECORRER NODOS->"+altura+"\n");
 				getSubarbolWordnet(hijos.get(pos),altura, treeResult);
 				RecorrerNodos(pos+1,hijos,altura,treeResult);
 			}
            
         }
-		if(pos == hijos.size()) System.out.print("FIN ALTURA\n\n");//printTree(treeResult);
+		//if(pos == hijos.size()) System.out.print("FIN ALTURA\n\n");//printTree(treeResult);
 		
 		return hijos;
     }
 	
-	public static LinkedHashMap<Synset, ArrayList<Synset>> getSubarbolWordnet(Synset s,  int altura, LinkedHashMap<Synset, ArrayList<Synset>> treeResult) throws JWNLException{
+	public  LinkedHashMap<Synset, ArrayList<Synset>> getSubarbolWordnet(Synset s,  int altura, LinkedHashMap<Synset, ArrayList<Synset>> treeResult) throws JWNLException{
 		ArrayList<Synset> hijos = new ArrayList <Synset>();
 
 		if( altura>=0){
-			//System.out.print("ALTURA->"+altura);
 			hijos = getHyponyms(s);
 			treeResult.put(s, hijos);
 			altura--;
-			System.out.print("ALTURA EN SUBARBOL->"+altura+"\n\n");
+			//System.out.print("ALTURA EN SUBARBOL->"+altura+"\n\n");
 			hijos=RecorrerNodos(0, hijos, altura, treeResult);
-			
-			//System.out.print("\n\nHIJOS"+hijos);
-			//altura--;
 		}
 		return treeResult;
 		
 	}
 	
-	static void printTree(Map<Synset, ArrayList<Synset>> treeResult){
+	public void printTree(Map<Synset, ArrayList<Synset>> treeResult){
 		 treeResult.forEach((key, value) -> System.out.println(key.getWord(0).getLemma() + ":" + value));
 	}
 	
@@ -747,16 +796,28 @@ public class WordnetLibrary {
             System.out.print("\n\nSENSES OFFSET\n");
             getSense(offset);
             System.out.print("\n\n\nObtener el synset del offset:"+s1 );*/
-            Synset s=getSynset(10073616);
-            Synset cat =getSynset(2124272); 
+            long s0 =2125600, s1=2124272, s3=6422547;
+            Synset kitten=  w.getSynset(s0);
+            Synset cat = w.getSynset(s1); 
+            Synset book =w.getSynset(s3);
+           /* 
+            Synset lcs = w.getLeastCommonSubsumer(kitten,cat);
+            System.out.print("LCS->"+lcs);
+            ArrayList<Synset> nodoskitten = w.getPathBetweenSynsets(kitten, lcs);
+            ArrayList<Synset> nodoscat = w.getPathBetweenSynsets(cat, lcs);
             
-           // getSubarbolWordnet(s,4); //Testado con cat
+            int numlinks_kitten= w.getNumLinksBetweenSynsets(kitten, lcs);
+            int numlinks_cat = w.getNumLinksBetweenSynsets(cat, lcs);*/
+          //  System.out.print("NUMERO DE ENLACES a KITTEN->"+numlinks_kitten+"\n"+"NUMERO DE ENLACES a KITTEN->"+numlinks_cat);
+            LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
+            tree = w.getSubarbolWordnet(cat,4, tree); //Testado con cat
+         //   w.printTree(tree);
            //System.out.print("\nSUBARBOL:"+ getSubarbolWordnet(cat,2));
-            LinkedHashMap<Synset,ArrayList<Synset>> treeResult= new LinkedHashMap<Synset,ArrayList<Synset>>();
-            treeResult =  getSubarbolWordnet(cat,3, treeResult);
+            /*LinkedHashMap<Synset,ArrayList<Synset>> treeResult= new LinkedHashMap<Synset,ArrayList<Synset>>();
+            treeResult =  w.getSubarbolWordnet(cat,3, treeResult);
             System.out.print("\n\nPINTAR ARBOL RESULTADO\n\n");
             treeResult.forEach((key, value) -> System.out.println(key.getWord(0).getLemma() + ":" + value));
-		
+		*/
 	 }
 	
 

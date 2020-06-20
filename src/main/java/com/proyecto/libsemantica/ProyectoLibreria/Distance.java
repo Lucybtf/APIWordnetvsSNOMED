@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import net.didion.jwnl.JWNLException;
@@ -27,19 +29,25 @@ public class Distance {
 		 Synset s1 = dictionary.getSynset(word1,pos);
 		 Synset s2 = dictionary.getSynset(word2,pos2);
 		 Synset lcs;
+		 
 		 /*Calculamos la profundidad de ambos synsets*/
-	     int depth, depth2, depthtotal, depthlcs;
+	     int depth, depth2, totallinks, depthlcs, linkss1tolcs, linkss2tolcs;
 		try {
 			depth = dictionary.depthOfSynset(s1);
 			depth2 = dictionary.depthOfSynset(s2);
-			depthtotal = depth+depth2;
 			
+	
 			 /*Calculamos el Least Common Synset y su profundidad*/
 			lcs = dictionary.getLeastCommonSubsumer(s1,s2);
 		    depthlcs =dictionary.depthOfSynset(lcs);
+			
+			linkss1tolcs= dictionary.getNumLinksBetweenSynsets(s1, lcs);
+	        linkss2tolcs = dictionary.getNumLinksBetweenSynsets(s2, lcs);
+			
+	        totallinks = (2*depthlcs) + linkss1tolcs + linkss2tolcs;
 		    
 		    /*Fórmula: 2*depth(LCS)/(depth(S1)+depth(S2)*/
-		    distance = (2*depthlcs)/(double)depthtotal;
+		    distance = (2*depthlcs)/(double) totallinks;
 		   // System.out.print("\nLCS->"+lcs+"DEPTH:"+depthlcs);
 		} catch (JWNLException e) {
 			// TODO Auto-generated catch block
@@ -48,11 +56,53 @@ public class Distance {
 	     
 		 return distance;
 	}
+	
 	 
+	public static double WPSimilaritySubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree) throws JWNLException{
+		System.out.print("ENTRA EN SUBTREE");
+		double result =0.0;
+		WordnetLibrary dictionary = new WordnetLibrary();
+		Synset lcs = dictionary.getLeastCommonSubsumer(s1,s2);//Y si en el subarbol no estuviera el LCS?
+		System.out.print("\nLCS->"+lcs);
+		if(tree.containsKey(lcs))
+		{
+			int depthlcs = dictionary.depthOfSynset(lcs, tree);
+			int numlinkss1 = dictionary.getNumLinksBetweenSynsets(s1, lcs);
+			int numlinkss2 = dictionary.getNumLinksBetweenSynsets(s2, lcs);
+			System.out.print("\n\nDEPTH lcs->"+lcs.getWord(0).getLemma()+" "+dictionary.depthOfSynset(lcs, tree)+ " NUMLINKSS1->"+numlinkss1+" NUMLINKSS2->"+numlinkss2);
+			result = (double)depthlcs/ (double)(depthlcs+numlinkss1+numlinkss2);
+		}
+		return result;
+		
+	}
+	
 	public static double Distance_WP(String word1, POS pos, String word2, POS pos2){
 		return 1-WPSimilarity(word1, pos, word2, pos2);
 	}
 	
+	public static double Sanchez_DistanceSubtree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree){
+		
+		WordnetLibrary dictionary = new WordnetLibrary();
+		Map.Entry<Synset, ArrayList<Synset>> rootnode = (new ArrayList<Map.Entry<Synset, ArrayList<Synset>>>(tree.entrySet())).get(0);
+		Synset root = rootnode.getKey();
+		HashSet<Synset> S1synsets = new HashSet(dictionary.getPathBetweenSynsets(s1, root));
+		System.out.print("\n\nCAMINO DE S1("+s1.getWord(0).getLemma()+") A ROOT("+root.getWord(0).getLemma()+"):"+S1synsets);
+		HashSet<Synset> S2synsets =  new HashSet(dictionary.getPathBetweenSynsets(s2, root));
+		System.out.print("\n\nCAMINO DE S2("+s2.getWord(0).getLemma()+") A ROOT("+root.getWord(0).getLemma()+"):"+S2synsets);
+		
+		int numinsideAinB = dictionary.NotContainsFirstInSecond(S1synsets, S2synsets);
+		int numinsideBinA = dictionary.NotContainsFirstInSecond(S2synsets, S1synsets);
+	    int intersection = dictionary.Intersection(S1synsets, S2synsets);
+		
+	    System.out.print("\n\nContiene "+numinsideAinB +" elementos de A en B");
+		System.out.print("\n\nContiene "+numinsideBinA +" elementos de B en A");
+		System.out.print("\n\nInteresection "+ intersection);
+	    
+		double num_frac =(double)(numinsideAinB+numinsideBinA)/(double)(numinsideAinB+numinsideBinA+intersection);
+		double distance_sanchez = Math.log10(1+num_frac)/Math.log10(2);
+		
+		return distance_sanchez;
+	}
 	
 	public static double Sanchez_Distance(String word1, POS pos, String word2, POS pos2){
 		
@@ -68,9 +118,9 @@ public class Distance {
 		 int numinsideAinB = dictionary.NotContainsFirstInSecond(S1synsets, S2synsets);
 		 int numinsideBinA = dictionary.NotContainsFirstInSecond(S2synsets, S1synsets);
 	     int intersection = dictionary.Intersection(S1synsets, S2synsets);
-		 System.out.print("\n\nContiene "+numinsideAinB +" elementos de A en B");
-		 System.out.print("\n\nContiene "+numinsideBinA +" elementos de B en A");
-		 System.out.print("\n\nInteresection "+ intersection);
+		// System.out.print("\n\nContiene "+numinsideAinB +" elementos de A en B");
+		 //System.out.print("\n\nContiene "+numinsideBinA +" elementos de B en A");
+		 //System.out.print("\n\nInteresection "+ intersection);
 			
 		double num_frac =(double)(numinsideAinB+numinsideBinA)/(double)(numinsideAinB+numinsideBinA+intersection);
 		double distance_sanchez = Math.log10(1+num_frac)/Math.log10(2);
@@ -200,28 +250,63 @@ public class Distance {
 	
 	public static void main(String[] arg) throws JWNLException, IOException{
 	 
-	
-	 final String word = "cancer", word2 ="disease";
+	 WordnetLibrary dictionarymain = new WordnetLibrary();
+	 final String word = "kitten", word2 ="cat";
 	 final POS pos = POS.NOUN;
 	 
 	/* double wp = WPSimilarity(word, pos, word2, pos);
 	 double distance_wp = Distance_WP(word, pos, word2, pos);
      System.out.print("\n\nLa similitud de Wu and Palmer es:"+wp+"\n");
-     System.out.print("\n\nLa similitud de Wu and Palmer es:"+distance_wp+"\n");
-     
-     double sanchez = Sanchez_Similarity(word, pos, word2, pos);
-     System.out.print("\n\nLa similitud de Sanchez es:"+sanchez+"\n");
-     */
+     System.out.print("\n\nLa similitud de Wu and Palmer es:"+distance_wp+"\n");*/
 	 
-	 long offset =2124272, kitty=2124950, sand_cat=2127662; 
-	// System.out.print("IC cat->"+IC_measure(offset));
-	 System.out.print("\n\n");
+	
+     
+    // double sanchez = Sanchez_Similarity(word, pos, word2, pos);
+     //System.out.print("\n\nLa similitud de Sanchez es:"+sanchez+"\n");
+     
+	 
+	 long offset =2124272, kitty_offset=2124950, sand_cat_offset=2127662, cat_offset=2124272, party_offset=7462241, chordate_offset =1468898, animal_offset=15568, feline_offset=2123649;
+	 Synset cat = dictionarymain.getSynset(cat_offset);
+	 Synset sand_cat = dictionarymain.getSynset(sand_cat_offset);
+	 Synset kitty = dictionarymain.getSynset(kitty_offset);
+	 Synset party = dictionarymain.getSynset(party_offset);
+	 Synset chordate = dictionarymain.getSynset(chordate_offset);
+	 Synset animal = dictionarymain.getSynset(animal_offset);
+	 Synset feline = dictionarymain.getSynset(feline_offset);
+	 
+	 LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
+	 LinkedHashMap<Synset, ArrayList<Synset>> treecat = new LinkedHashMap<Synset, ArrayList<Synset>>();
+	 LinkedHashMap<Synset, ArrayList<Synset>> treeanimal = new LinkedHashMap<Synset, ArrayList<Synset>>();
+	 
+     treecat = dictionarymain.getSubarbolWordnet(feline,4, treecat); //Testado con cat
+     //tree = dictionarymain.getSubarbolWordnet(party,4, tree); //Testado con cat
+     //treeanimal = dictionarymain.getSubarbolWordnet(animal,9, treeanimal);
+    // dictionarymain.printTree(treecat);
+    // double wptree = WPSimilaritySubTree(cat,kitty,treecat);
+    // System.out.print("\nRES"+wptree);
+     
+     double wptree =Sanchez_DistanceSubtree(cat,kitty,treecat);
+     System.out.print("\n\nSUBTREE->"+wptree);
+   //  System.out.print("\n\nDEPTH SUBARBOL cotillion"+dictionarymain.depthOfSynset(dictionarymain.getSynset(7463637), tree));
+    /*System.out.print("\n\nDEPTH SUBARBOL CAT ENCONTRAR FELINE(NO EN EL ARBOL)->"+dictionarymain.depthOfSynset(dictionarymain.getSynset(2123649), treecat));
+    System.out.print("\n\nDEPTH SUBARBOL CAT(KITTY)->"+dictionarymain.depthOfSynset(dictionarymain.getSynset(kitty_offset), treecat));
+    System.out.print("\n\nDEPTH SUBARBOL CAT(ES LA RAIZ)->"+dictionarymain.depthOfSynset(dictionarymain.getSynset(cat_offset), treecat));*/
+     //System.out.print("\n\nDEPTH SUBARBOL ANIMAL"+dictionarymain.depthOfSynset(dictionarymain.getSynset(2127662), treeanimal));
+     
+    // dictionarymain.printTree(tree);
+	// dictionarymain.getSubarbolWordnet(cat,2);
+	// Synset s=wordnet
+	 //getNodesToEntity(Synset synset)
+	//System.out.print("IC cat->"+IC_measure(offset));
+	/* System.out.print("\n\n");
 	 double res = resnisk_Distance(kitty,sand_cat);
 	 double lin = lin_Distance(kitty,sand_cat);
 	 double jc = jianCorath_Distance(kitty,sand_cat);
 	 System.out.print("\nMedida RES:"+ res+ "\nMedida Lin:"+lin+ "\nMedida jc:"+jc);
-	 
+	 */
 	 }
+
+
 
 
 
