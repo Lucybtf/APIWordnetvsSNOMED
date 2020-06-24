@@ -209,7 +209,7 @@ public class WordnetLoader {
 		//BuiltGraph(g, 0, nodes,wl);
 		if(contador<1){
 		
-		ArrayList<String> nodoshijos = wl.getHyponyms(POS.NOUN,nodos.get(contador));
+		/*ArrayList<String> nodoshijos = wl.getHyponyms(POS.NOUN,nodos.get(contador));
 		//System.out.print(nodoshijos);
 		hijosnivel = RecorrerNodos(0,nodoshijos,wl,g, hijosnivel);
 		
@@ -222,7 +222,7 @@ public class WordnetLoader {
 		
 		BuiltGraph(g, contador+1, hijosnivel, wl);
 		
-		
+		*/
 		}
 	}
 	
@@ -232,11 +232,12 @@ public class WordnetLoader {
 		if (pos < hijos.size()-1) { 
 			 g =printHijos(g, hijos.get(pos),wl, hijos);
            // System.out.println("\n\nElemento en posición "+pos + " es "+ hijos.get(pos));
-            System.out.print("\n\nElemento en posición ----"+pos+"---NODO--"+hijos.get(pos)+"HIJOS"+wl.getHyponyms(POS.NOUN, hijos.get(pos)));
+        /*    System.out.print("\n\nElemento en posición ----"+pos+"---NODO--"+hijos.get(pos)+"HIJOS"+wl.getHyponyms(POS.NOUN, hijos.get(pos)));
             ArrayList<String> nhijos=wl.getHyponyms(POS.NOUN, hijos.get(pos));
            
             hijosnodos.addAll(nhijos);
             RecorrerNodos(pos+1,hijos, wl,g, hijosnodos);
+        */
         }
 		
         return hijosnodos;
@@ -249,7 +250,7 @@ public class WordnetLoader {
 	    WordnetLibrary wl = new WordnetLibrary();
 	    
 	    //1º NODO
-	    Synset s = wl.getSynset("entity", POS.NOUN);
+	   /* Synset s = wl.getSynset("entity");
 	    
 	    String node =s.getWord(0).getLemma();
 	 //   System.out.print(node); 
@@ -283,7 +284,7 @@ public class WordnetLoader {
 		frame.setPreferredSize(new Dimension(900, 600));
 		frame.pack();
 		frame.setLocationByPlatform(true);
-		frame.setVisible(true);
+		frame.setVisible(true);*/
 	   /* BufferedImage image =  mxCellRenderer.createBufferedImage(graphAdapter, null, 2, Color.WHITE, true, null);
 	    File imgFile1 = new File("./rdf/imagen.png");
 	    ImageIO.write(image, "PNG", imgFile1);*/

@@ -21,13 +21,13 @@ public class Distance {
 
 	 WordnetLibrary dictionary;
 	/* Similitud de Wu and Palmer*/
-	 public static double WPSimilarity(String word1, POS pos, String word2, POS pos2) {
+	 public static double WPSimilarity(Synset s1, Synset s2, WordnetLibrary dictionary) {
 		 double distance = 0;
 		 
 		 /*Obtenemos los synsets de Wordnet*/
-		 WordnetLibrary dictionary = new WordnetLibrary();
-		 Synset s1 = dictionary.getSynset(word1,pos);
-		 Synset s2 = dictionary.getSynset(word2,pos2);
+		 /*WordnetLibrary dictionary = new WordnetLibrary();
+		 Synset s1 = dictionary.getSynset(word1,pos,1);
+		 Synset s2 = dictionary.getSynset(word2,pos2, 1);*/
 		 Synset lcs;
 		 
 		 /*Calculamos la profundidad de ambos synsets*/
@@ -76,8 +76,8 @@ public class Distance {
 		
 	}
 	
-	public static double Distance_WP(String word1, POS pos, String word2, POS pos2){
-		return 1-WPSimilarity(word1, pos, word2, pos2);
+	public static double Distance_WP(Synset s1, Synset s2, WordnetLibrary dictionary){
+		return 1-WPSimilarity(s1, s2, dictionary);
 	}
 	
 	public static double Sanchez_DistanceSubtree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree){
@@ -104,12 +104,12 @@ public class Distance {
 		return distance_sanchez;
 	}
 	
-	public static double Sanchez_Distance(String word1, POS pos, String word2, POS pos2){
+	public static double Sanchez_Distance(Synset s1, Synset s2, WordnetLibrary dictionary){
 		
 		  
-		 WordnetLibrary dictionary = new WordnetLibrary();
-		 Synset s1 = dictionary.getSynset(word1,pos);
-		 Synset s2 = dictionary.getSynset(word2,pos2);
+	/*	 WordnetLibrary dictionary = new WordnetLibrary();
+		 Synset s1 = dictionary.getSynset(word1, pos, sense1);
+		 Synset s2 = dictionary.getSynset(word2, pos2, sense2);*/
 		 
 		 HashSet<Synset> S1synsets =  dictionary.getHypernymTreeList(s1);
 		 HashSet<Synset> S2synsets =  dictionary.getHypernymTreeList(s2);
@@ -200,7 +200,7 @@ public class Distance {
 	
 	public static int getLeafsWordnet() throws IOException, JWNLException{
 		WordnetLibrary dictionary = new WordnetLibrary();
-		Synset s1 = dictionary.getSynset("entity", POS.NOUN);
+		Synset s1 = dictionary.getSynset("entity", POS.NOUN, 1);
 		System.out.print("\nNODOS DE ENTITY");
 		
 		HashSet<Synset> hyp = dictionary.getHyponymsTreeList(s1);
