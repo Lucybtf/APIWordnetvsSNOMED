@@ -1,4 +1,4 @@
-package com.proyecto.libsemantica.ProyectoLibreria;
+package com.example.spingbootswagger2.model;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

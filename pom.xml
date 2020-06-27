@@ -1,7 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.3.1.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
   <groupId>com.proyecto.libsemantica</groupId>
   <artifactId>ProyectoLibreria</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -36,11 +41,11 @@
 	    <artifactId>jwnl</artifactId>
 	    <version>1.4_rc3</version>
 	</dependency>
-	<dependency>
+<!--  	<dependency>
 	  <groupId>org.slf4j</groupId>
 	  <artifactId>slf4j-simple</artifactId>
 	  <version>1.7.21</version>
-	</dependency>
+	</dependency>-->
 	<dependency>
 	    <groupId>org.apache.logging.log4j</groupId>
 	    <artifactId>log4j-core</artifactId>
@@ -127,5 +132,60 @@
 		<scope>test</scope>
 </dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+		
+		    <dependency>
+			  <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+			  <artifactId>jersey-guava</artifactId>
+			  <version>2.6</version>
+			</dependency>
+				  <dependency>
+	    <groupId>net.sf.jwordnet</groupId>
+	    <artifactId>jwnl</artifactId>
+	    <version>1.4_rc3</version>
+	</dependency>
+
+
+<dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20200518</version>
+</dependency>
   </dependencies>
 </project>

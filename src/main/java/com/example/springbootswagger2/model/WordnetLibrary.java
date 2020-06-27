@@ -1,4 +1,4 @@
-package com.proyecto.libsemantica.ProyectoLibreria;
+package com.example.springbootswagger2.model;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,14 +14,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.tree.TreeNode;
 
-import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+//import com.example.springbootswagger2.model.Student;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import jersey.repackaged.com.google.common.collect.Sets;
 import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
@@ -41,19 +48,21 @@ import net.didion.jwnl.data.relationship.RelationshipList;
 import net.didion.jwnl.dictionary.Dictionary;
 import net.didion.jwnl.util.TypeCheckingList;
 
+
 public class WordnetLibrary {
 
-	private static final Logger logdescription = LoggerFactory.getLogger(WordnetLibrary.class.getName());
+	//private static final Logger logdescription = LoggerFactory.getLogger(WordnetLibrary.class.getName());
 	private String propertiesFile = "C:\\Users\\67382523\\workspace_tfm\\ProyectoLibreria\\config\\file_properties.xml";
 	private Dictionary dic;
+		
 	
 	/* WordnetLibrary(): Constructor de la libreria*/
-	WordnetLibrary(){
+	public WordnetLibrary(){
 		  try{
 	          JWNL.initialize(new FileInputStream(propertiesFile));
 	          dic = Dictionary.getInstance();
 	        }catch(Exception e){
-	          logdescription.error(e.toString());
+	  //        logdescription.error(e.toString());
 	        }
 	}
 	
@@ -68,12 +77,18 @@ public class WordnetLibrary {
 			IndexWord index = dic.lookupIndexWord(pos, word);
 			synset =index.getSense(sense);
 		} catch (JWNLException e) {
-			logdescription.error("Error al crear el Synset",e);
+			//logdescription.error("Error al crear el Synset",e);
 		}
 		return synset;
 	}
 	
-	
+	public Synset getSynset(Object s) {
+		//Pattern phone = Pattern.compile("Offset:");
+		//Matcher m = phone.matcher(s);
+	//	m.find();
+		//System.out.print("CADENA"+s+m.groupCount());
+		return null;
+	}
 	public String  getSense(Synset synset){
 		return synset.getGloss();
 	}
@@ -85,12 +100,12 @@ public class WordnetLibrary {
 	
 	
 	 /* getSenses: Descripciones de un palabra(word) */
-	 public String getSense(String word, int sense){
+	 public String getSense(String word, POS pos, int sense){
 		String description = null;
 		try {
 			//Obtenemos el índice de la palabra
-			IndexWord index = dic.lookupIndexWord(POS.NOUN, word);
-			if(index == null) System.out.println("No synsets found for '" + word + "/" + POS.NOUN.getKey() + "'");
+			IndexWord index = dic.lookupIndexWord(pos, word);
+			if(index == null) System.out.println("No synsets found for '" + word + "/" + pos.getKey() + "'");
 			else{
 				//Obtenemos todos los resultados de una palabra
 				Synset[] senses = index.getSenses();
@@ -99,7 +114,7 @@ public class WordnetLibrary {
 				
 			}
 		} catch (JWNLException e) {
-			logdescription.error(e.toString());
+		//	logdescription.error(e.toString());
 		}
 		return description;
 	}
@@ -709,25 +724,28 @@ public class WordnetLibrary {
 	
 	 public static void main(String[] arg) throws JWNLException{
 	        WordnetLibrary w = new WordnetLibrary();
-	        logdescription.info("HOLA CREADO WORDNET");
+	       // logdescription.info("HOLA CREADO WORDNET");
 	        
 	        final String word = "canis familiaris";
             final POS pos = POS.NOUN;
             
             long offset = 2961779;
            
+            String synsetstr = "[Synset: [Offset: 7462241] [POS: noun] Words: party -- (an occasion on which people can assemble for social interaction and entertainment; \"he planned a party to celebrate Bastille Day\")]";
+            
+            w.getSynset(synsetstr);
             /*Synset s1 = getSynset(offset);
             System.out.print("SENSES SYNSET\n");
             getSense(s1);
             System.out.print("\n\nSENSES OFFSET\n");
             getSense(offset);
             System.out.print("\n\n\nObtener el synset del offset:"+s1 );*/
-            System.out.print("TEST"+w.getHypernymsWords("party", 1, POS.NOUN));
+           /* System.out.print("TEST"+w.getHypernymsWords("party", 1, POS.NOUN));
             long s0 =2125600, s1=2124272, s3=6422547;
             Synset kitten=  w.getSynset(s0);
             Synset cat = w.getSynset(s1); 
             Synset book =w.getSynset(s3);
-           /* 
+           *//* 
             Synset lcs = w.getLeastCommonSubsumer(kitten,cat);
             System.out.print("LCS->"+lcs);
             ArrayList<Synset> nodoskitten = w.getPathBetweenSynsets(kitten, lcs);
@@ -736,8 +754,8 @@ public class WordnetLibrary {
             int numlinks_kitten= w.getNumLinksBetweenSynsets(kitten, lcs);
             int numlinks_cat = w.getNumLinksBetweenSynsets(cat, lcs);*/
           //  System.out.print("NUMERO DE ENLACES a KITTEN->"+numlinks_kitten+"\n"+"NUMERO DE ENLACES a KITTEN->"+numlinks_cat);
-            LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
-            tree = w.getSubarbolWordnet(cat,4, tree); //Testado con cat
+      //      LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
+        //    tree = w.getSubarbolWordnet(cat,4, tree); //Testado con cat
          //   w.printTree(tree);
            //System.out.print("\nSUBARBOL:"+ getSubarbolWordnet(cat,2));
             /*LinkedHashMap<Synset,ArrayList<Synset>> treeResult= new LinkedHashMap<Synset,ArrayList<Synset>>();

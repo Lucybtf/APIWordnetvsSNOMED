@@ -1,4 +1,4 @@
-package com.proyecto.libsemantica.ProyectoLibreria;
+package com.example.spingbootswagger2.model;
 
 import static org.junit.Assert.*;
 
@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.example.springbootswagger2.model.WordnetLibrary;
 
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.POS;
@@ -77,7 +79,7 @@ public class WordnetLibraryTest {
 		String sense = "a worker who is hired to perform a job";
 		String employee = "employee";
 		int i = 0;
-		String senseresult = wordnetTest.getSense(employee, i);
+		String senseresult = wordnetTest.getSense(employee,POS.NOUN, i);
 		assertEquals(sense, senseresult);
 	}
 	
