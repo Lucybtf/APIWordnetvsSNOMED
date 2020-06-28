@@ -1,152 +1,132 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.3.1.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-  <groupId>com.proyecto.libsemantica</groupId>
-  <artifactId>ProyectoLibreria</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+	<groupId>com.proyecto.libsemantica</groupId>
+	<artifactId>ProyectoLibreria</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
-  <name>ProyectoLibreria</name>
-  <url>http://maven.apache.org</url>
+	<name>ProyectoLibreria</name>
+	<url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <!--  <dependency>
-	  <groupId>net.sf.extjwnl</groupId>
-	  <artifactId>extjwnl</artifactId>
-	  <version>2.0.2</version>
-	</dependency>
-	<dependency>
-	  <groupId>net.sf.extjwnl</groupId>
-	  <artifactId>extjwnl-data-wn31</artifactId>
-	  <version>1.2</version>
-	</dependency>-->
-	  <dependency>
-	    <groupId>net.sf.jwordnet</groupId>
-	    <artifactId>jwnl</artifactId>
-	    <version>1.4_rc3</version>
-	</dependency>
-<!--  	<dependency>
-	  <groupId>org.slf4j</groupId>
-	  <artifactId>slf4j-simple</artifactId>
-	  <version>1.7.21</version>
-	</dependency>-->
-	<dependency>
-	    <groupId>org.apache.logging.log4j</groupId>
-	    <artifactId>log4j-core</artifactId>
-	    <version>2.13.2</version>
-	</dependency>
-	<dependency>
-	  <groupId>commons-logging</groupId>
-	  <artifactId>commons-logging</artifactId>
-	  <version>1.1.3</version>
-	</dependency>
-	<!-- Dependencies SNOMED CT Library -->
-	  <dependency>
-    <groupId>org.glassfish.jersey.core</groupId>
-    <artifactId>jersey-client</artifactId>
-    <version>2.25.1</version>
-    </dependency>
-	<dependency>
-	    <groupId>org.json</groupId>
-	    <artifactId>json</artifactId>
-	    <version>20140107</version>
-	</dependency>
-	
-	<dependency>
-    <groupId>com.tinkerpop.blueprints</groupId>
-    <artifactId>blueprints-neo4j-graph</artifactId>
-    <version>2.6.0</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>com.tinkerpop.blueprints</groupId>
-    <artifactId>blueprints-graph-sail</artifactId>
-    <version>2.6.0</version>
-</dependency>
-<dependency>
-    <groupId>com.tinkerpop.blueprints</groupId>
-    <artifactId>blueprints-sail-graph</artifactId>
-    <version>2.6.0</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-<groupId>org.neo4j.driver</groupId>
-<artifactId>neo4j-java-driver</artifactId>
-<version>4.0.1</version>
-</dependency>
-<dependency>
-  <groupId>com.slack.api</groupId>
-  <artifactId>bolt</artifactId>
-  <version>1.0.8</version>
-</dependency>
-<dependency>
-  <groupId>com.slack.api</groupId>
-  <artifactId>bolt-servlet</artifactId>
-  <version>1.0.8</version>
-</dependency>
-<dependency>
-    <groupId>org.neo4j</groupId>
-    <artifactId>neo4j</artifactId>
-    <version>4.0.5</version>
-</dependency>
-<dependency>
-    <groupId>org.graphstream</groupId>
-    <artifactId>gs-core</artifactId>
-    <version>1.1.1</version>
-</dependency>
-<dependency>
-<groupId>org.jgrapht</groupId>
-<artifactId>jgrapht-core</artifactId>
-<version>1.4.0</version>
-</dependency>
-<dependency>
-    <groupId>org.jgrapht</groupId>
-    <artifactId>jgrapht-jdk1.5</artifactId>
-    <version>0.7.3</version>
-</dependency>
-<dependency>
-    <groupId>org.jgrapht</groupId>
-    <artifactId>jgrapht-ext</artifactId>
-    <version>0.9.1</version>
-</dependency>
-<dependency>
-		<groupId>org.hamcrest</groupId>
-		<artifactId>hamcrest-library</artifactId>
-		<version>1.3</version>
-		<scope>test</scope>
-</dependency>
-
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jwordnet</groupId>
+			<artifactId>jwnl</artifactId>
+			<version>1.4_rc3</version>
+		</dependency>
+		<!-- <dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-simple</artifactId> 
+			<version>1.7.21</version> </dependency> -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.13.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.3</version>
+		</dependency>
+		<!-- Dependencies SNOMED CT Library -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>2.25.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20140107</version>
+		</dependency>
+		<dependency>
+			<groupId>com.tinkerpop.blueprints</groupId>
+			<artifactId>blueprints-neo4j-graph</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.tinkerpop.blueprints</groupId>
+			<artifactId>blueprints-graph-sail</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.tinkerpop.blueprints</groupId>
+			<artifactId>blueprints-sail-graph</artifactId>
+			<version>2.6.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j.driver</groupId>
+			<artifactId>neo4j-java-driver</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.slack.api</groupId>
+			<artifactId>bolt</artifactId>
+			<version>1.0.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.slack.api</groupId>
+			<artifactId>bolt-servlet</artifactId>
+			<version>1.0.8</version>
+		</dependency>
+		<!-- <dependency> <groupId>org.neo4j</groupId> <artifactId>neo4j</artifactId> 
+			<version>4.0.5</version> </dependency> -->
+		<dependency>
+			<groupId>org.graphstream</groupId>
+			<artifactId>gs-core</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-core</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-jdk1.5</artifactId>
+			<version>0.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-ext</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -163,29 +143,25 @@
 			<artifactId>springfox-swagger2</artifactId>
 			<version>2.6.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.6.1</version>
 		</dependency>
-		
-		    <dependency>
-			  <groupId>org.glassfish.jersey.bundles.repackaged</groupId>
-			  <artifactId>jersey-guava</artifactId>
-			  <version>2.6</version>
-			</dependency>
-				  <dependency>
-	    <groupId>net.sf.jwordnet</groupId>
-	    <artifactId>jwnl</artifactId>
-	    <version>1.4_rc3</version>
-	</dependency>
-
-
-<dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20200518</version>
-</dependency>
-  </dependencies>
+		<dependency>
+			<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+			<artifactId>jersey-guava</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jwordnet</groupId>
+			<artifactId>jwnl</artifactId>
+			<version>1.4_rc3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20200518</version>
+		</dependency>
+	</dependencies>
 </project>

@@ -320,7 +320,6 @@ public class WordnetLibrary {
 	}
 		
 
-	
 	public ArrayList<Synset> getListofSynsets(PointerTargetNodeList list, ArrayList<Synset> result){	
 	
 		Iterator it = list.iterator();
@@ -690,13 +689,30 @@ public class WordnetLibrary {
 	public ArrayList<Synset> RecorrerNodos(int pos, ArrayList<Synset> hijos,int altura, LinkedHashMap<Synset, ArrayList<Synset>> treeResult) throws JWNLException{
 		
 		if (pos < hijos.size()) { 
-			//System.out.print("\nNODO->"+hijos.get(pos).getWord(0).getLemma()+ "  HIJOS"+hijos.size()+" ALTURA->"+altura);
+			
 			
 			if( altura>=0){
-				treeResult.put(hijos.get(pos), getHyponyms(hijos.get(pos)));
-				//System.out.print("\nALTURA DENTRO DE RECORRER NODOS->"+altura+"\n");
-				getSubarbolWordnet(hijos.get(pos),altura, treeResult);
-				RecorrerNodos(pos+1,hijos,altura,treeResult);
+				//System.out.print("\nNODO->"+hijos.get(pos).getWord(0).getLemma()+ hijos.get(0).getOffset()+ "  HIJOS"+hijos.size()+" ALTURA->"+altura);
+					//treeResult.put(hijos.get(pos), new ArrayList<Synset>());
+			
+					ArrayList<Synset> hyponyms = getHyponyms(hijos.get(pos));
+					if(altura == 0) {
+						//System.out.print(" 0 HIJOS");
+						treeResult.put(hijos.get(pos), new ArrayList<Synset>());
+					}
+					else
+					{
+					//	System.out.print("NODO->"+hijos.get(pos).getWord(0).getLemma()+ hijos.get(0).getOffset()+"\n");
+						treeResult.put(hijos.get(pos), hyponyms);
+						getSubarbolWordnet(hijos.get(pos),altura, treeResult);
+						//System.out.print("\n"+treeResult+"\n");
+					}
+				
+					RecorrerNodos(pos+1,hijos,altura,treeResult);
+					//System.out.print("*****ALTURA" +altura+hijos.get(pos));
+					
+				
+				
 			}
            
         }

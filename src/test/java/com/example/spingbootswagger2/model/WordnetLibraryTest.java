@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -658,13 +659,33 @@ public class WordnetLibraryTest {
 		}
 	}
 	
-	@Test
+	/*@Test
 	public void RecorrerNodosTest(){
 		
-	}
+	}*/
 	
 	@Test
-	public void getSubarbolWordnetTest(){
+	public void getSubarbolWordnetTest() throws JWNLException{
+		Synset s1 = wordnetTest.getSynset("cat", POS.NOUN, 1);
+	//	Synset s= wordnetTest.getSynset(7462241);
+		ArrayList<Synset> hyponyms = wordnetTest.getHyponyms(s1);
+		LinkedHashMap<Synset, ArrayList<Synset>> expectedResult = new LinkedHashMap<Synset, ArrayList<Synset>>();
+		expectedResult.put(s1, hyponyms);
+		for(Synset a:hyponyms) {
+			expectedResult.put(a, new ArrayList<Synset>());
+		}
 		
+		LinkedHashMap<Synset, ArrayList<Synset>> treeResult = new LinkedHashMap<Synset, ArrayList<Synset>>();
+		treeResult = wordnetTest.getSubarbolWordnet(s1, 1, treeResult);
+		//System.out.print("RESULTADO");
+		//wordnetTest.printTree(treeResult);
+		//System.out.print("GENERADO");
+		//wordnetTest.printTree(expectedResult);
+		assertEquals(expectedResult, treeResult);
+	}
+
+	private ArrayList<Synset> getHypnonyms(Synset s1) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
