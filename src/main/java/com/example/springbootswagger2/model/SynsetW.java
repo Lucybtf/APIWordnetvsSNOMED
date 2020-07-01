@@ -13,6 +13,8 @@ import net.didion.jwnl.dictionary.Dictionary;
 public class SynsetW {
 	
 	Long offset;
+	String Lemma;
+	
 	public Long getOffset() {
 		return offset;
 	}
@@ -20,9 +22,6 @@ public class SynsetW {
 	public void setOffset(Long offset) {
 		this.offset = offset;
 	}
-
-	String Lemma;
-
 
 	public String getLemma() {
 		return Lemma;
