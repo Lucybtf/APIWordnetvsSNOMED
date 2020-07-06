@@ -1,32 +1,38 @@
 package com.example.springbootswagger2.distancecontroller;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import com.example.springbootswagger2.model.Distance;
+import com.example.springbootswagger2.model.WordnetLibrary;
+
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import net.didion.jwnl.JWNLException;
+import net.didion.jwnl.data.Synset;
+import springfox.documentation.annotations.ApiIgnore;
+
 
 @Api(value = "DistanceRestController", description = "REST Api Wordnet")
 @RestController
 public class DistanceController {
 
-	/*@ApiOperation(value = "Get WP Similarity", tags = "getWPSimilarity")
-	@RequestMapping(value = "/getWPSimilarity", method = RequestMethod.GET)
-	public String getWPSimilarity() {
-		return "hola";
-	}
-	
-	@ApiOperation(value = "Get WP Subtree Similarity", tags = "getWuandPamer")
-	@RequestMapping(value = "/getWPSubtreeSimilarity", method = RequestMethod.GET)
-	public String getWPSubTreeSimilarity() {
-		return "hola";
-	}*/
-	
+	private WordnetLibrary wl = new WordnetLibrary();
+	Distance distance = new Distance();
+
 	@ApiOperation(value = "Get Wu and Palmer distance in Wordnet", tags = "getWuandPamerDistance")
-	@RequestMapping(value = "/getWPDistance", method = RequestMethod.GET)
-	public String getWPDistance() {
-		return "hola";
+	@RequestMapping(value = "/getWPDistance/{offset1}/{offset2}", method = RequestMethod.GET)
+//	@ApiImplicitParam(name = "offset", value = "offset", dataType = DataType.LONG, paramType = ParamType.PATH)
+	@ResponseBody
+	public double getWPDistance(@PathVariable("offset1")long offset1, @PathVariable("offset2")long offset2) throws JWNLException {
+		Synset s1 = wl.getSynset(offset1);
+		Synset s2 = wl.getSynset(offset2);
+		return distance.Distance_WP(s1, s2, wl);
 	}
 	
 	@ApiOperation(value = "Get Wu and Palmer distance in a Subtree of Wordnet", tags = "getWuandPamerDistance")
@@ -47,7 +53,7 @@ public class DistanceController {
 		return "hola";
 	}
 	
-	@ApiOperation(value = "Get Sanchez IC of a Synset", tags = "getWuandPamerDistance")
+	@ApiOperation(value = "Get Sanchez IC of a Synset", tags = "getICMeasure")
 	@RequestMapping(value = "/getSanchezIC", method = RequestMethod.GET)
 	public String getSanchezIC() {
 		return "hola";
@@ -72,3 +78,4 @@ public class DistanceController {
 	}
 	
 }
+	

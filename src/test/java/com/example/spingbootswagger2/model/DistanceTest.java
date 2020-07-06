@@ -109,10 +109,10 @@ public class DistanceTest {
 	*/
 	@Test
 	public void IC_measureTest() throws JWNLException, IOException{
-		//Synset cat = wordnetTest.getSynset(2124272);
+		Synset cat = wordnetTest.getSynset(2124272);
 		Synset kitten = wordnetTest.getSynset(2125600);
 		double result = 4.77173442538677;
-		System.out.print("IC MEASURE"+distance.IC_measure(kitten, wordnetTest)+"\n");
+	//	System.out.print("IC MEASURE"+distance.IC_measure(kitten, wordnetTest)+"\n");
 		assertEquals(result,distance.IC_measure(kitten, wordnetTest), 0.0);
 		
 	}
@@ -120,10 +120,11 @@ public class DistanceTest {
 	@Test
 	public void IC_measureSubTreeTest() throws JWNLException, IOException{
 		Synset cat = wordnetTest.getSynset(2124272);
-		Synset wildcat = wordnetTest.getSynset(2125600);
-		double result = 1.6020599913279623;
+		Synset wildcat = wordnetTest.getSynset(2127662);
+		double result = 1.4771212547196624;
 		LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
 		tree = wordnetTest.getSubarbolWordnet(cat,7, tree); //Testado con cat
+		//wordnetTest.printTree(tree);
 		System.out.print("IC MEASURE"+distance.IC_measureSubTree(wildcat, tree, wordnetTest)+"\n");
 		assertEquals(result,distance.IC_measureSubTree(wildcat, tree, wordnetTest), 0.0);
 		
@@ -142,11 +143,30 @@ public class DistanceTest {
 		
 		try {
 			Synset cat = wordnetTest.getSynset(2124272);
-			Synset kitten = wordnetTest.getSynset(2125600);
+			Synset kitten = wordnetTest.getSynset(2124950);
 			
-			double result = 2.18620045285897;
+			double result = 4.287157288287515;
 			System.out.print("resnisk distance"+distance.resnisk_Distance(cat, kitten, wordnetTest)+"\n");
 			assertEquals(result, distance.resnisk_Distance(cat, kitten,  wordnetTest), 0.0);
+		} catch (JWNLException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void resnisk_DistanceSubTreeTest() {
+		
+		try {
+			Synset cat = wordnetTest.getSynset(2124272);
+			Synset wildcat = wordnetTest.getSynset(2127662);
+			LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
+			tree = wordnetTest.getSubarbolWordnet(cat,2, tree); //Testado con cat
+			
+			double result = 0.08715017571890014;
+			System.out.print("resnisk distance SUBTREE"+distance.resnisk_DistanceSubTree(cat, wildcat, tree, wordnetTest)+"\n");
+			assertEquals(result, distance.resnisk_DistanceSubTree(cat, wildcat, tree, wordnetTest), 0.0);
 		} catch (JWNLException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -159,9 +179,9 @@ public class DistanceTest {
 		try {
 		
 			Synset cat = wordnetTest.getSynset(2124272);
-			Synset kitten = wordnetTest.getSynset(2125600);
-			double result = 0.48266399951749667;
-			//System.out.print("Lin distance"+distance.lin_Distance(2124272, 2125600));
+			Synset kitten = wordnetTest.getSynset(2124950);
+			double result = 0.9447800779770641;
+			//System.out.print("Lin distance->"+distance.lin_Distance(cat, kitten,  wordnetTest)+"\n");
 			assertEquals(result, distance.lin_Distance(cat, kitten,  wordnetTest), 0.0);
 		} catch (JWNLException | IOException e) {
 			// TODO Auto-generated catch block
@@ -170,19 +190,56 @@ public class DistanceTest {
 	}
 	
 	@Test
-	public void jianConrath_DistanceTest(){
-		try {
-			
-			Synset cat = wordnetTest.getSynset(2124272);
-			Synset kitten = wordnetTest.getSynset(2125600);
-			
-			System.out.print("\n\nJian and Conrath"+distance.jianConrath_Distance(cat, kitten, wordnetTest)+"\n");
+	public void lin_DistanceSubTreeTest() {
 		
+		try {
+		
+			Synset cat = wordnetTest.getSynset(2124272);
+			Synset wildcat = wordnetTest.getSynset(2127662);
+			double result = 0.09120755711605885;
+			LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
+			tree = wordnetTest.getSubarbolWordnet(cat,7, tree); //Testado con cat
+			
+			//System.out.print("Lin distance subtree->"+distance.lin_DistanceSubTree(cat, wildcat, tree,  wordnetTest)+"\n");
+			assertEquals(result, distance.lin_DistanceSubTree(cat, wildcat, tree,  wordnetTest), 0.0);
 		} catch (JWNLException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	
+	@Test
+	public void jianConrath_DistanceTest(){
+		try {
+			double result = 4.686490807956345;
+			Synset cat = wordnetTest.getSynset(2124272);
+			Synset kitten = wordnetTest.getSynset(2125600);
+			//double result = 0.48266399951749667;
+			System.out.print("\n\nJian and Conrath"+distance.jianConrath_Distance(cat, kitten, wordnetTest)+"\n");
+			assertEquals(result, distance.jianConrath_Distance(cat, kitten, wordnetTest), 0.0);
+		} catch (JWNLException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	
+	@Test
+	public void jianConrath_DistanceSubTreeTest(){
+		try {
+			double result = 1.4065401804339552;
+			Synset cat = wordnetTest.getSynset(2124272);
+			Synset wildcat = wordnetTest.getSynset(2127662);
+			LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
+			tree = wordnetTest.getSubarbolWordnet(cat,7, tree); //Testado con cat
+		//	wordnetTest.printTree(tree);
 		
+			//System.out.print("\n\nJian and Conrath SUBTREE->"+distance.jianConrath_DistanceSubTree(cat, wildcat, tree, wordnetTest)+"result"+result+"\n");
+			assertEquals(result, distance.jianConrath_DistanceSubTree(cat, wildcat, tree, wordnetTest), 0.0);
+		} catch (JWNLException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 
 }

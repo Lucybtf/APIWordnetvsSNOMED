@@ -150,4 +150,9 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/mapstruct/mapstruct/1.0.0.Final/mapstruct-1.0.0.Final.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/io/springfox/springfox-swagger-ui/2.6.1/springfox-swagger-ui-2.6.1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/glassfish/jersey/bundles/repackaged/jersey-guava/2.6/jersey-guava-2.6.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/battcn/swagger-spring-boot-starter/2.1.5-RELEASE/swagger-spring-boot-starter-2.1.5-RELEASE.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/battcn/swagger-spring-boot-autoconfigure/2.1.5-RELEASE/swagger-spring-boot-autoconfigure-2.1.5-RELEASE.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/springfox/springfox-bean-validators/2.8.0/springfox-bean-validators-2.8.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/battcn/swagger-vue-ui/2.1.5-RELEASE/swagger-vue-ui-2.1.5-RELEASE.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/battcn/swagger-spring-boot-actuator/2.1.5-RELEASE/swagger-spring-boot-actuator-2.1.5-RELEASE.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

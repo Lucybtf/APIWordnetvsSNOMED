@@ -333,6 +333,14 @@ public class WordnetLibrary {
 		return result;
 	}
 
+	public ArrayList<String> getListofSynsetsToString(ArrayList<Synset> result){	
+		ArrayList<String> listsynsets = new ArrayList<String>();
+		for(int i=0;i<result.size();i++) {
+				listsynsets.add(result.get(i).toString());
+		}
+		return listsynsets;
+	}
+
 	public ArrayList<String> getListofWords(PointerTargetNodeList list, ArrayList<String> result){	
 		
 		Iterator it = list.iterator();
