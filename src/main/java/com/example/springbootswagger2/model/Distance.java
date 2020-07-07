@@ -56,7 +56,7 @@ public class Distance {
 	}
 	
 	 
-	public static double WPSimilaritySubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException{
+	public double WPSimilaritySubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException{
 		//System.out.print("ENTRA EN SUBTREE");
 		double result =0.0;
 		Synset lcs = dictionary.getLeastCommonSubsumer(s1,s2);//Y si en el subarbol no estuviera el LCS?
@@ -77,12 +77,12 @@ public class Distance {
 		return 1-WPSimilarity(s1, s2, dictionary);
 	}
 	
-	public static double Distance_WPSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException{
+	public double Distance_WPSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException{
 		return 1-WPSimilaritySubTree(s1, s2, tree, dictionary);
 	}
 	
 	
-	public static double Sanchez_DistanceSubtree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary){
+	public double Sanchez_DistanceSubtree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary){
 		
 	
 		Map.Entry<Synset, ArrayList<Synset>> rootnode = (new ArrayList<Map.Entry<Synset, ArrayList<Synset>>>(tree.entrySet())).get(0);
@@ -106,7 +106,7 @@ public class Distance {
 		return distance_sanchez;
 	}
 	
-	public static double Sanchez_Distance(Synset s1, Synset s2, WordnetLibrary dictionary){
+	public double Sanchez_Distance(Synset s1, Synset s2, WordnetLibrary dictionary){
 		
 		 
 		 HashSet<Synset> S1synsets =  dictionary.getHypernymTreeList(s1);
@@ -129,7 +129,7 @@ public class Distance {
 		
 	}
 	
-	public static int nodeLeafs(Synset synset) throws JWNLException{
+	public int nodeLeafs(Synset synset) throws JWNLException{
 		
 		WordnetLibrary dictionary = new WordnetLibrary();
 		HashSet<Synset> hyponymsynsets = dictionary.getHyponymsTreeList(synset);
@@ -168,7 +168,7 @@ public class Distance {
 	
 	
 	
-	public static double IC_measure(Synset synset, WordnetLibrary dictionary) throws JWNLException, IOException{
+	public double IC_measure(Synset synset, WordnetLibrary dictionary) throws JWNLException, IOException{
 		/*IC Sanchez(c) =-log( (|leaves(c)|/|hypernyms(c)|+1)/max_leaves+1))*/
 		int leaves = 0;
 	
@@ -191,7 +191,7 @@ public class Distance {
 		return icvalue;
 	}
 	
-	public static int depthSubTree(LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException {
+	public int depthSubTree(LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException {
 		int max =-999;
 		for(Synset s : tree.keySet()) {
 			//Set<Entry<Synset, ArrayList<Synset>>> pair = tree.entrySet();
@@ -203,7 +203,7 @@ public class Distance {
 		
 	}
 	
-	public static  int leavesSubTree(Synset s, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException {
+	public int leavesSubTree(Synset s, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException {
 		ArrayList<Synset> hyponymstree = new ArrayList<Synset>();
 		HashSet<Synset> hyponymsfull = dictionary.getHyponymsTreeList(s);
 		int leaves = 0;
@@ -219,7 +219,7 @@ public class Distance {
 		return leaves;
 	}
 	
-	public static double IC_measureSubTree(Synset synset, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException, IOException{
+	public  double IC_measureSubTree(Synset synset, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException, IOException{
 		/*IC Sanchez(c) =-log( (|leaves(c)|/|hypernyms(c)|+1)/max_leaves+1))*/                                                                                                                                                                                                                                                
 		int leaves = 0;
 		double icvalue = 0.0;
@@ -248,7 +248,7 @@ public class Distance {
 	}
 	
 
-	public static int getLeafsWordnet() throws IOException, JWNLException{
+	public int getLeafsWordnet() throws IOException, JWNLException{
 		WordnetLibrary dictionary = new WordnetLibrary();
 		Synset s1 = dictionary.getSynset("entity", POS.NOUN, 1);
 	//	System.out.print("\nNODOS DE ENTITY");
@@ -266,7 +266,7 @@ public class Distance {
 		return leavesW;
 	}
 	
-	public static double resnisk_Distance(Synset s1, Synset s2, WordnetLibrary dictionary) throws JWNLException, IOException{
+	public double resnisk_Distance(Synset s1, Synset s2, WordnetLibrary dictionary) throws JWNLException, IOException{
 	
 		Synset lcs =dictionary.getLeastCommonSubsumer(s1, s2);
 		//System.out.print("lcs->"+lcs);
@@ -274,7 +274,7 @@ public class Distance {
 		return IC_measure(lcs,dictionary);
 	}
 	
-	public static double resnisk_DistanceSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException, IOException{
+	public double resnisk_DistanceSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException, IOException{
 		
 		Synset lcs =dictionary.getLeastCommonSubsumer(s1, s2);
 		//System.out.print("lcs->"+lcs);
@@ -286,7 +286,7 @@ public class Distance {
 		return 0.0; 
 	}
 	
-	public static double lin_Distance(Synset s1, Synset s2, WordnetLibrary dictionary) throws JWNLException, IOException{
+	public double lin_Distance(Synset s1, Synset s2, WordnetLibrary dictionary) throws JWNLException, IOException{
 		double resultlin = 0.0, num=0.0, div =0.0;
 		num = 2* resnisk_Distance(s1, s2, dictionary);
 		div = IC_measure(s1, dictionary)+ IC_measure(s2, dictionary);
@@ -294,7 +294,7 @@ public class Distance {
 		return resultlin;
 	}
 	
-	public static double lin_DistanceSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException, IOException{
+	public double lin_DistanceSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException, IOException{
 		double resultlin = 0.0, num=0.0, div =0.0;
 		
 		if(tree.containsKey(s1) && tree.containsKey(s2)) {
@@ -308,7 +308,7 @@ public class Distance {
 		else return 0.0;
 	}
 	
-	public static double jianConrath_Distance(Synset s1, Synset s2, WordnetLibrary dictionary) throws JWNLException, IOException{
+	public double jianConrath_Distance(Synset s1, Synset s2, WordnetLibrary dictionary) throws JWNLException, IOException{
 		double resultjc = 0.0, num=0.0, div =0.0, res =0.0;
 		System.out.print("IC Jian->"+IC_measure(s1, dictionary)+"\n");
 		System.out.print("IC Jiang->"+IC_measure(s2, dictionary)+"\n");
@@ -318,7 +318,7 @@ public class Distance {
 		return resultjc;
 	}
 	
-	public static double jianConrath_DistanceSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException, IOException{
+	public double jianConrath_DistanceSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException, IOException{
 		double resultjc = 0.0, num=0.0, sum =0.0;
 		if(tree.containsKey(s1) && tree.containsKey(s2)) {
 			//System.out.print("ICSUBTREE s1->"+IC_measureSubTree(s1, tree, dictionary)+"\n");
@@ -367,8 +367,8 @@ public class Distance {
     // dictionarymain.printTree(treecat);
     // double wptree = WPSimilaritySubTree(cat,kitty,treecat);
     // System.out.print("\nRES"+wptree);
-     
-     double wptree = IC_measureSubTree(dictionarymain.getSynset(2127275),treecat, dictionarymain);
+     Distance distance = new Distance();
+     double wptree = distance.IC_measureSubTree(dictionarymain.getSynset(2127275),treecat, dictionarymain);
      System.out.print("\n\nSUBTREE->"+wptree);
    //  System.out.print("\n\nDEPTH SUBARBOL cotillion"+dictionarymain.depthOfSynset(dictionarymain.getSynset(7463637), tree));
     /*System.out.print("\n\nDEPTH SUBARBOL CAT ENCONTRAR FELINE(NO EN EL ARBOL)->"+dictionarymain.depthOfSynset(dictionarymain.getSynset(2123649), treecat));

@@ -22,7 +22,6 @@ public class TreeNode {
 
 
 	TreeNode(long keyset, ArrayList<Long> hijos){
-		System.out.print("KEY"+keyset);
 		this.keysynset = keyset;
 		this.hijos = hijos;
 	}

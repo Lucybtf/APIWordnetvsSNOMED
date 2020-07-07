@@ -5,26 +5,24 @@ import java.util.ArrayList;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-//@ApiModel("Model Tree")
+@ApiModel("Model Tree")
 public class Tree {
 
 	@ApiModelProperty(value = "nodes", required = true)
 	ArrayList<TreeNode> nodes = new ArrayList<>();
 
 	Tree(long keysynset, ArrayList<Long> hijos){
-	//  System.out.print("HOLA"+ keysynset);
-	// Long key = new Long(keysynset);
 	  TreeNode n = new TreeNode(keysynset,hijos);
 	  nodes.add(n);
 	}
 	
 
-	public ArrayList<TreeNode> getNode() {
+	public ArrayList<TreeNode> getNodes() {
 		return nodes;
 	}
 
 
-	public void setNode(ArrayList<TreeNode> nodes) {
+	public void setNodes(ArrayList<TreeNode> nodes) {
 		this.nodes = nodes;
 	}
 	

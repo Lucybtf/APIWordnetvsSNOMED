@@ -747,6 +747,27 @@ public class WordnetLibrary {
 		 treeResult.forEach((key, value) -> System.out.println(key.getWord(0).getLemma() + ":" + value));
 	}
 	
+	public LinkedHashMap<Synset, ArrayList<Synset>> convertTreeToMap(Tree tree) throws JWNLException {
+		LinkedHashMap<Synset, ArrayList<Synset>> treeResult = new LinkedHashMap<Synset, ArrayList<Synset>>();
+		ArrayList<com.example.springbootswagger2.model.TreeNode> nodes = tree.getNodes();
+		for(int i=0;i< nodes.size(); i++) {
+			//System.out.print("nodo keyset"+nodes.get(i).getKeysynset()+"\n");
+			//System.out.print("hijos"+nodes.get(i).getHijos()+"\n\n");
+			ArrayList<Long> hijos = nodes.get(i).getHijos();
+			ArrayList<Synset> synsetSons = new ArrayList<Synset>();
+			for(int j=0; j< hijos.size(); j++) {
+				
+				System.out.print("HIJOS"+hijos.get(j)+"\n\n");
+				//Long l = new Long(hijos.get(i));
+				Synset s = getSynset(hijos.get(j).longValue());
+				synsetSons.add(s);
+			}
+			treeResult.put(getSynset(nodes.get(i).getKeysynset()), synsetSons);
+		
+		}
+		return treeResult;
+	}
+	
 	 public static void main(String[] arg) throws JWNLException{
 	        WordnetLibrary w = new WordnetLibrary();
 	       // logdescription.info("HOLA CREADO WORDNET");

@@ -1,4 +1,4 @@
-package com.example.springbootswagger2.wordnetcontroller;
+package com.example.springbootswagger2.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ import java.util.TreeMap;
 import javax.activation.MimeType;
 import javax.swing.tree.TreeNode;
 import javax.websocket.server.PathParam;
-import javax.ws.rs.QueryParam;
+
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,8 +43,7 @@ import com.example.springbootswagger2.model.WordnetLibrary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -445,7 +444,7 @@ public class WordnetLibraryController {
 				hijosjson.put(hijos.get(i).getOffset());
 				System.out.print("s"+s.getWord(0)+"hijos"+hijos.get(i)+ "\n");
 			}
-			//System.out.print(jsonhijos);
+
 			jsonnode.put("keysynset", s.getOffset());
 			jsonnode.put("hijos", hijosjson);
 			jsonarray.put(jsonnode);
@@ -485,22 +484,19 @@ public class WordnetLibraryController {
 	    return getSubtree(offset, depth);
 	}
 	
-	
+
 	@ApiOperation(value = "Get depth of a synset in a subtree", tags = "getdepthOfSynset")
 	@RequestMapping(value = "/getdepthOfSynsetinSubtree/{offset}", method = RequestMethod.POST, consumes={"application/json"})
 	@ApiImplicitParam(name = "offset", value = "offset", dataType = DataType.LONG, paramType = ParamType.PATH)
 	@ResponseBody
-	public Tree getdepthOfSynsetinSubtree(@PathVariable("offset")Long offset, @RequestBody Tree treeResult) {
+	public int getdepthOfSynsetinSubtree(@PathVariable("offset")Long offset, @RequestBody Tree treeResult) throws JWNLException {
 	
-		System.out.print("TREE"+treeResult);
-		LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset, ArrayList<Synset>>();
-		ArrayList<com.example.springbootswagger2.model.TreeNode> nodes = treeResult.getNode();
-		for(int i=0;i< nodes.size(); i++) {
-			System.out.print("nodo keyset"+nodes.get(i).getKeysynset()+"\n");
-			System.out.print("hijos"+nodes.get(i).getHijos()+"\n\n");
-		//	tree.put(wl.getSynset(nodes.get(i).toString()), value)
-		}
-		return treeResult;
+		LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<>();
+	
+		tree = wl.convertTreeToMap(treeResult);
+		Synset n = wl.getSynset(offset.longValue());
+	
+		return wl.depthOfSynset(n, tree);
 	}
 
 }
