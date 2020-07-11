@@ -70,6 +70,17 @@ import net.didion.jwnl.util.TypeCheckingList;
 import springfox.documentation.annotations.ApiIgnore;
 
 
+/*	getLemma by offset, synset 
+ * getLemmas by ArrayList Synset
+ * getNumberSenses
+ * getListofWords
+ * NOt ContainsFirstInSecond
+ * Interesection
+ * getHypernymTreeList(Synset)
+ * getHyponymsTreeList(Synset)
+ */
+
+
 @Api(value = "WordnetRestController", description = "REST Api Wordnet")
 @RestController
 public class WordnetLibraryController {
@@ -99,37 +110,7 @@ public class WordnetLibraryController {
 		System.out.print(wl.getSense(offset));
 		return  wl.getSense(offset);
 	}
-	
-	/*@ApiOperation(value = "Get Sense by Synset", tags = "getSense")
-	@RequestMapping(value = "/getSense/{synset}", method = RequestMethod.POST,consumes = {"application/json"}, produces= { "text/plain" })
-	public String getSense(@ApiParam("synset")SynsetW s) throws JWNLException  {
-		//String input = (String) inputJsonObj.get("input");
-		System.out.print(s);
-		//System.out.print("CADENA"+jsonString);
-	
 
-	    return "HOLA";
-	}*/
-	
-	/*public String getSense(@ApiParam(value = "Description of synset", example="{\"lemma\":\"feline mammal usually having thick soft fur and no ability to roar: domestic cats; wildcats\"\r\n}" ) @RequestParam("synset")String jsonString) throws JWNLException  {
-		//String input = (String) inputJsonObj.get("input");
-		SynsetW inputPojo  = null;
-		System.out.print("CADENA"+jsonString);
-		 try {
-			inputPojo = new ObjectMapper().readValue(jsonString, SynsetW.class);
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			System.out.print("MApping Error");
-			e.printStackTrace();
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			System.out.print("JSON processing");
-			e.printStackTrace();
-		}
-
-	    return inputPojo.getLemma();
-	}*/
-	
 
 	
 	@ApiOperation(value = "Get Sense by Synset", tags = "getSense")
@@ -416,15 +397,6 @@ public class WordnetLibraryController {
 		return json.toString();
 	}
 
-	/*	getLemma by offset, synset 
-	 * getLemmas by ArrayList Synset
-	 * getNumberSenses
-	 * getListofWords
-	 * NOt ContainsFirstInSecond
-	 * Interesection
-	 * getHypernymTreeList(Synset)
-	 * getHyponymsTreeList(Synset)
-	 */
 	
 	@ApiOperation(value = "Get SubTree of Wordnet", tags = "getSubtree")
 	@RequestMapping(value = "/getSubtreeByOffset/{offset}/{depth}", method = RequestMethod.POST, produces={"application/json"})

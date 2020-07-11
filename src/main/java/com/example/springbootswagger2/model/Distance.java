@@ -46,7 +46,7 @@ public class Distance {
 		    
 		    /*Fórmula: 2*depth(LCS)/(depth(S1)+depth(S2)*/
 		    distance = (double)(2*depthlcs)/(double) totallinks;
-		   // System.out.print("\nLCS->"+lcs+"DEPTH:"+depthlcs);
+
 		} catch (JWNLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -331,16 +331,16 @@ public class Distance {
 		return resultjc;
 	}
 	
-	public static void main(String[] arg) throws JWNLException, IOException{
+	/*public static void main(String[] arg) throws JWNLException, IOException{
 	 
 	 WordnetLibrary dictionarymain = new WordnetLibrary();
 	 final String word = "kitten", word2 ="cat";
 	 final POS pos = POS.NOUN;
 	 
-	/* double wp = WPSimilarity(word, pos, word2, pos);
+	 double wp = WPSimilarity(word, pos, word2, pos);
 	 double distance_wp = Distance_WP(word, pos, word2, pos);
      System.out.print("\n\nLa similitud de Wu and Palmer es:"+wp+"\n");
-     System.out.print("\n\nLa similitud de Wu and Palmer es:"+distance_wp+"\n");*/
+     System.out.print("\n\nLa similitud de Wu and Palmer es:"+distance_wp+"\n");
 	 
 	
      
@@ -373,7 +373,7 @@ public class Distance {
    //  System.out.print("\n\nDEPTH SUBARBOL cotillion"+dictionarymain.depthOfSynset(dictionarymain.getSynset(7463637), tree));
     /*System.out.print("\n\nDEPTH SUBARBOL CAT ENCONTRAR FELINE(NO EN EL ARBOL)->"+dictionarymain.depthOfSynset(dictionarymain.getSynset(2123649), treecat));
     System.out.print("\n\nDEPTH SUBARBOL CAT(KITTY)->"+dictionarymain.depthOfSynset(dictionarymain.getSynset(kitty_offset), treecat));
-    System.out.print("\n\nDEPTH SUBARBOL CAT(ES LA RAIZ)->"+dictionarymain.depthOfSynset(dictionarymain.getSynset(cat_offset), treecat));*/
+    System.out.print("\n\nDEPTH SUBARBOL CAT(ES LA RAIZ)->"+dictionarymain.depthOfSynset(dictionarymain.getSynset(cat_offset), treecat));
      //System.out.print("\n\nDEPTH SUBARBOL ANIMAL"+dictionarymain.depthOfSynset(dictionarymain.getSynset(2127662), treeanimal));
      
     // dictionarymain.printTree(tree);
@@ -381,13 +381,13 @@ public class Distance {
 	// Synset s=wordnet
 	 //getNodesToEntity(Synset synset)
 	//System.out.print("IC cat->"+IC_measure(offset));
-	/* System.out.print("\n\n");
+	 System.out.print("\n\n");
 	 double res = resnisk_Distance(kitty,sand_cat);
 	 double lin = lin_Distance(kitty,sand_cat);
 	 double jc = jianCorath_Distance(kitty,sand_cat);
 	 System.out.print("\nMedida RES:"+ res+ "\nMedida Lin:"+lin+ "\nMedida jc:"+jc);
-	 */
-	 }
+	 }*/
+	 
 
 
 
