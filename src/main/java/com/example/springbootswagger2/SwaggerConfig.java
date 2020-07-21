@@ -47,6 +47,19 @@ public class SwaggerConfig {
 		// @formatter:on
 	}
 	
+	@Bean
+	public Docket apiSnomed() {
+		// @formatter:off
+		return new Docket(DocumentationType.SWAGGER_2)
+				
+				.groupName("SnomedCT")
+				.select()
+				.apis(RequestHandlerSelectors.basePackage("com.example.springbootswagger2.controllersnomed"))
+				.apis(Predicates.not(RequestHandlerSelectors.basePackage("com.example.springbootswagger2.controllerdistance")))
+				//.apis(Predicates.not(RequestHandlerSelectors.basePackage("com.example.springbootswagger2.controller")))
+				.build();
+				//.apiInfo(apiInfoWordnet());
+	}
 	
 	
 	@Bean

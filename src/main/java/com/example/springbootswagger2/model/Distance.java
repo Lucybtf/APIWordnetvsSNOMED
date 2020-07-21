@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -22,6 +23,7 @@ import jersey.repackaged.com.google.common.collect.Sets;
 public class Distance {
 
 	 WordnetLibrary dictionary;
+
 	/* Similitud de Wu and Palmer*/
 	 public double WPSimilarity(Synset s1, Synset s2, WordnetLibrary dictionary) {
 		 double distance = 0.0d;
@@ -53,7 +55,7 @@ public class Distance {
 		}
 	     
 		 return distance;
-	}
+	 }
 	
 	 
 	public double WPSimilaritySubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException{
@@ -76,6 +78,8 @@ public class Distance {
 	public  double Distance_WP(Synset s1, Synset s2, WordnetLibrary dictionary){
 		return 1-WPSimilarity(s1, s2, dictionary);
 	}
+	
+
 	
 	public double Distance_WPSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree, WordnetLibrary dictionary) throws JWNLException{
 		return 1-WPSimilaritySubTree(s1, s2, tree, dictionary);
@@ -128,6 +132,8 @@ public class Distance {
 		return distance_sanchez;
 		
 	}
+	
+
 	
 	public int nodeLeafs(Synset synset) throws JWNLException{
 		
