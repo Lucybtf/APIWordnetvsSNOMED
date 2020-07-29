@@ -22,7 +22,7 @@ import jersey.repackaged.com.google.common.collect.Sets;
 
 public class Distance {
 
-	 WordnetLibrary dictionary;
+	 WordnetLibrary dictionary = new WordnetLibrary();
 
 	/* Similitud de Wu and Palmer*/
 	 public double WPSimilarity(Synset s1, Synset s2, WordnetLibrary dictionary) {
@@ -255,7 +255,7 @@ public class Distance {
 	
 
 	public int getLeafsWordnet() throws IOException, JWNLException{
-		WordnetLibrary dictionary = new WordnetLibrary();
+		//WordnetLibrary dictionary = new WordnetLibrary();
 		Synset s1 = dictionary.getSynset("entity", POS.NOUN, 1);
 	//	System.out.print("\nNODOS DE ENTITY");
 		

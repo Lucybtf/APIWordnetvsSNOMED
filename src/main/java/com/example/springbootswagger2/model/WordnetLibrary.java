@@ -1,7 +1,11 @@
 package com.example.springbootswagger2.model;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,6 +26,11 @@ import javax.swing.tree.TreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,11 +60,14 @@ import net.didion.jwnl.util.TypeCheckingList;
 
 public class WordnetLibrary {
 
+	@Autowired
+    private ResourceLoader resourceLoader;
 	//private static final Logger logdescription = LoggerFactory.getLogger(WordnetLibrary.class.getName());
-	private String propertiesFile = "C:\\Users\\67382523\\workspace_tfm\\ProyectoLibreria\\config\\file_properties.xml";
+	private String propertiesFile = "config\\file_properties.xml";
 	private Dictionary dic;
 		
 	
+	/* WordnetLibrary(): Constructor de la libreria*/
 	/* WordnetLibrary(): Constructor de la libreria*/
 	public WordnetLibrary(){
 		  try{

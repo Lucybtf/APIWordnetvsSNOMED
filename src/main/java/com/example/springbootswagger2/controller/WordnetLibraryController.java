@@ -91,6 +91,9 @@ public class WordnetLibraryController {
 	@ApiOperation(value = "Get Synset by Offset", tags = "getSynset")
 	@RequestMapping(value = "/getSynset/{offset}", method = RequestMethod.GET)
 	public String getSynset(  @ApiParam(value = "Offset", required = true, example = "4582285") @PathVariable("offset")long offset) throws JWNLException {
+		System.out.print("HACE LA CONEXION\n");
+		
+		System.out.print(" TRAS LA CONEXION\n");
 		Synset a = wl.getSynset(offset);
 		return  a.toString();
 	}

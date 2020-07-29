@@ -16,7 +16,7 @@ import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.Synset;
 
-public class DistanceTest {
+public class DistanceWordnet {
 
 	
 	WordnetLibrary wordnetTest;
