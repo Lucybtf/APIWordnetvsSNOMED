@@ -12,7 +12,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.example.springbootswagger2.model.WordnetLibrary;
+import com.proyectoapi.model.WordnetLibrary;
 
 import net.didion.jwnl.JWNLException;
 import net.didion.jwnl.data.POS;
