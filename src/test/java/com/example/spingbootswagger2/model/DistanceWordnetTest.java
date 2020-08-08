@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.proyectoapi.model.Distance;
+import com.proyectoapi.model.DistancesWordnet;
 import com.proyectoapi.model.WordnetLibrary;
 
 import net.didion.jwnl.JWNLException;
@@ -20,13 +20,13 @@ public class DistanceWordnetTest {
 
 	
 	WordnetLibrary wordnetTest;
-	Distance distance;
+	DistancesWordnet distance;
 	
 	
 	@Before
 	public void initWordnetLibrary(){
 		 wordnetTest = new WordnetLibrary();
-		 distance = new Distance();
+		 distance = new DistancesWordnet();
 	}
 	
 	

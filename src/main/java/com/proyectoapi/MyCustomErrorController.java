@@ -14,17 +14,18 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 public class MyCustomErrorController implements ErrorController {
 
-  @RequestMapping("/error")
-  @ResponseBody
-  public String handleError(HttpServletRequest request) {
-      Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-      Exception exception = (Exception) request.getAttribute("javax.servlet.error.exception");
-      return String.format("<html><body><h2>Error Page</h2><div>Status code: <b>%s</b></div>"
-                      + "<div>Exception Message: <b>%s</b></div><body></html>",
-              statusCode, exception==null? "N/A": exception.getMessage());
-  }
+	@RequestMapping("/error")
+	@ResponseBody
+	public String handleError(HttpServletRequest request) {
+		Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+		Exception exception = (Exception) request.getAttribute("javax.servlet.error.exception");
+		return String.format(
+				"<html><body><h2>Error Page</h2><div>Status code: <b>%s</b></div>"
+						+ "<div>Exception Message: <b>%s</b></div><body></html>",
+				statusCode, exception == null ? "N/A" : exception.getMessage());
+	}
 
-  public String getErrorPath() {
-      return "/error";
-  }
+	public String getErrorPath() {
+		return "/error";
+	}
 }
