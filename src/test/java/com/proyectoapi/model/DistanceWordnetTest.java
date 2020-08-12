@@ -1,4 +1,4 @@
-package com.example.spingbootswagger2.model;
+package com.proyectoapi.model;
 
 import static org.junit.Assert.*;
 
@@ -9,11 +9,7 @@ import java.util.LinkedHashMap;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.proyectoapi.model.DistancesWordnet;
-import com.proyectoapi.model.WordnetLibrary;
-
 import net.didion.jwnl.JWNLException;
-import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.Synset;
 
 public class DistanceWordnetTest {

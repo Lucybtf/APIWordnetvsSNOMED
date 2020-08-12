@@ -34,9 +34,7 @@ public class WordnetLibrary {
 	/* WordnetLibrary(): Constructor de la libreria */
 	public WordnetLibrary() {
 		try {
-			// InputStream periodicalsXml = this.getClass().getResourceAsStream(
-			// "config/file_properties.xml");
-			// File resource = new File("file_properties.xml");
+		
 			Resource resource = new ClassPathResource("file_properties.xml");
 			System.out.print("PATH WORDNET" + resource.exists() + "resource" + resource.getFilename());
 
@@ -293,7 +291,6 @@ public class WordnetLibrary {
 		while (it.hasNext()) {
 			PointerTargetNode listaux = (PointerTargetNode) it.next();
 			if (!result.contains(listaux.getSynset())) {
-				// System.out.print("SYNSET"+listaux.getSynset()+"\n");
 				result.add(listaux.getSynset());
 			}
 		}
@@ -655,31 +652,19 @@ public class WordnetLibrary {
 		if (pos < hijos.size()) {
 
 			if (altura >= 0) {
-				// System.out.print("\nNODO->"+hijos.get(pos).getWord(0).getLemma()+
-				// hijos.get(0).getOffset()+ " HIJOS"+hijos.size()+" ALTURA->"+altura);
-				// treeResult.put(hijos.get(pos), new ArrayList<Synset>());
 
 				ArrayList<Synset> hyponyms = getHyponyms(hijos.get(pos));
 				if (altura == 0) {
-					// System.out.print(" 0 HIJOS");
 					treeResult.put(hijos.get(pos), new ArrayList<Synset>());
 				} else {
-					// System.out.print("NODO->"+hijos.get(pos).getWord(0).getLemma()+
-					// hijos.get(0).getOffset()+"\n");
 					treeResult.put(hijos.get(pos), hyponyms);
 					getSubarbolWordnet(hijos.get(pos), altura, treeResult);
-					// System.out.print("\n"+treeResult+"\n");
 				}
 
 				RecorrerNodos(pos + 1, hijos, altura, treeResult);
-				// System.out.print("*****ALTURA" +altura+hijos.get(pos));
-
 			}
 
 		}
-		// if(pos == hijos.size()) System.out.print("FIN
-		// ALTURA\n\n");//printTree(treeResult);
-
 		return hijos;
 	}
 
@@ -696,7 +681,25 @@ public class WordnetLibrary {
 		return treeResult;
 
 	}
-
+	
+	public LinkedHashMap<Synset, ArrayList<Synset>> getSubarbolWordnet(Synset s){
+		LinkedHashMap<Synset, ArrayList<Synset>> tree = new  LinkedHashMap<Synset, ArrayList<Synset>>();
+		HashSet<Synset> synsets =getHyponymsTreeList(s);
+		System.out.print("SUBTREE->"+synsets+"\n");
+		try {
+		for(Synset s1:synsets) {
+			
+				tree.put(s1, getHyponyms(s1));
+			
+		}
+		} catch (JWNLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.print("TRUE TREE"+tree+"\n");
+		return tree;
+	}
+	
 	public void printTree(Map<Synset, ArrayList<Synset>> treeResult) {
 		treeResult.forEach((key, value) -> System.out.println(key.getWord(0).getLemma() + ":" + value));
 	}
@@ -729,7 +732,10 @@ public class WordnetLibrary {
 		final String word = "canis familiaris";
 		final POS pos = POS.NOUN;
 
-		long offset = 2961779;
+		long offset = 2934150;
+		Synset s1 = w.getSynset(offset);
+		System.out.print("S1"+s1+"\n");
+		w.getSubarbolWordnet(s1);
 
 		/*
 		 * Synset s1 = getSynset(offset); System.out.print("SENSES SYNSET\n");

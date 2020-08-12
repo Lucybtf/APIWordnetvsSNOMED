@@ -72,13 +72,13 @@ public class SnomedCTLibraryController {
 	@ApiOperation(value = "Get Ancestros Distancia Minima Concept", tags = "getAncestrosDistanciaMinima")
 	@RequestMapping(value = "/getAncestrosDistanciaMinima/{id}", method = RequestMethod.GET)
 	public HashMap<Long, Integer> getAncestrosDistanciaMinima(long idConcept) {
-		return snomedc.getAncestrosDistanciaMinima(idConcept);
+		return snomedc.getAncestorsDistanciaMinima(idConcept);
 	}
 
 	@ApiOperation(value = "Get Num Links Between Concepts", tags = "getNumLinksBetweenConcepts")
 	@RequestMapping(value = "/getNumLinksBetweenConcepts/{id}/{id2}", method = RequestMethod.GET)
 	public int getNumLinksBetweenConcepts(@PathVariable("id") long idConcept1, @PathVariable("id2") long idConcept2) {
-		return snomedc.getNumLinksBetweenConceptos(idConcept1, idConcept2);
+		return snomedc.getNumLinksBetweenConcepts(idConcept1, idConcept2);
 	}
 
 	@ApiOperation(value = "Get Ancestors of a Concept", tags = "getAncestors")

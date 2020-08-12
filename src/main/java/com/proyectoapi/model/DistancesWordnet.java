@@ -168,7 +168,7 @@ public class DistancesWordnet {
 		// System.out.print("HIPERNOMIMOS "+ hypernymssynsets.size()+"\n");
 
 		double icvalue = 0.0;
-		double numer = ((double) leaves / (double) hypernymssynsets.size()) + 1;
+		double numer = ((double) leaves / (double) hypernymssynsets.size() + 1);
 		int denom = 65031 + 1;
 		// System.out.print("Numerador->"+numer);//+ "Denominador->"+getLeafsWordnet());
 
@@ -227,7 +227,7 @@ public class DistancesWordnet {
 			// System.out.print("HIPER synset"+synset.getWord(0).getLemma()+hypernyms);
 			int numhypernyms = hypernyms.size();
 
-			double numer = ((double) numleaves / (double) numhypernyms) + 1;
+			double numer = ((double) numleaves / (double) numhypernyms + 1);
 			int denom = tree.size() + 1;
 			// System.out.print("num
 			// leaves"+numleaves+"numhypernyms"+numhypernyms+"Numerador->"+numer+

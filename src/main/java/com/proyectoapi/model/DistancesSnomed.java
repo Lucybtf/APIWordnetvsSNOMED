@@ -11,8 +11,8 @@ public class DistancesSnomed {
 
 	public double wuSimilarity(long idConcept1, long idConcept2) {
 
-		HashMap<Long, Integer> id1 = snomed.getAncestrosDistanciaMinima(idConcept1);
-		HashMap<Long, Integer> id2 = snomed.getAncestrosDistanciaMinima(idConcept2);
+		HashMap<Long, Integer> id1 = snomed.getAncestorsDistanciaMinima(idConcept1);
+		HashMap<Long, Integer> id2 = snomed.getAncestorsDistanciaMinima(idConcept2);
 
 		if (id1.size() > id2.size()) {
 			HashMap<Long, Integer> ancestresTemporal = id1;
@@ -36,7 +36,9 @@ public class DistancesSnomed {
 
 	public double wuSimilaritySubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
 		HashMap<Long, Integer> id1 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept1, subgraph);
+		System.out.print("\nANCESTORs id1"+id1+"\n");
 		HashMap<Long, Integer> id2 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept2, subgraph);
+		System.out.print("\nANCESTORs id2"+id2+"\n");
 		if (id1.size() > id2.size()) {
 			HashMap<Long, Integer> ancestresTemporal = id1;
 			id1 = id2;
@@ -44,26 +46,34 @@ public class DistancesSnomed {
 		}
 		long idLCS = -1;
 		int distanciaLCS = Integer.MAX_VALUE;
-		for (Long id : id1.keySet())
+		for (Long id : id1.keySet()) {
+			System.out.print("ENTRA");
 			if (id2.containsKey(id) && (distanciaLCS > id1.get(id) + id2.get(id))) {
 				idLCS = id;
 				distanciaLCS = id1.get(id) + id2.get(id);
 			}
+		}
+		System.out.print("\nLCS"+idLCS+ "distance"+distanciaLCS+"\n");
 		if (idLCS == -1)
 			return 0;
+		
 		if (subgraph.containsKey(idLCS)) {
+			
 			int distancia = snomed.getAncestorsMaxDistanceSubGraph(idLCS, subgraph);
+			System.out.print("distanciamax"+distancia);
 			return ((double) 2 * distancia / (double) (distanciaLCS + 2 * distancia));
 		} else
 			return 0;
 	}
 
 	public double SanchezDistance(long idConcept1, long idConcept2) {
-		Set<Long> id1 = snomed.getAncestrosDistanciaMinima(idConcept1).keySet();
-		Set<Long> id2 = snomed.getAncestrosDistanciaMinima(idConcept2).keySet();
+		Set<Long> id1 = snomed.getAncestorsDistanciaMinima(idConcept1).keySet();
+		System.out.print("\nSET1->"+id1+"\n");
+		Set<Long> id2 = snomed.getAncestorsDistanciaMinima(idConcept2).keySet();
+		System.out.print("\nSET2->"+id1+"\n");
 
 		int numinsideAinB = snomed.NotContainsFirstInSecond(id1, id2);
-		int numinsideBinA = snomed.NotContainsFirstInSecond(id1, id2);
+		int numinsideBinA = snomed.NotContainsFirstInSecond(id2, id1);
 		int intersection = snomed.Intersection(id1, id2);
 
 		double num_frac = (double) (numinsideAinB + numinsideBinA)
@@ -74,13 +84,14 @@ public class DistancesSnomed {
 
 	public double SanchezDistanceSubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
 		Set<Long> id1 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept1, subgraph).keySet();
-		System.out.print("\nID1" + id1.size());
+		System.out.print("\nID1->" + id1);
 		Set<Long> id2 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept2, subgraph).keySet();
-		System.out.print("\nID1" + id1.size() + "ID2" + id2.size());
+		System.out.print("\nID1->" + id2);
 
 		int numinsideAinB = snomed.NotContainsFirstInSecond(id1, id2);
-		int numinsideBinA = snomed.NotContainsFirstInSecond(id1, id2);
+		int numinsideBinA = snomed.NotContainsFirstInSecond(id2, id1);
 		int intersection = snomed.Intersection(id1, id2);
+		System.out.print("\nNUMSA->" + numinsideAinB+ "NUMSB->"+numinsideBinA+"INT->"+intersection);
 
 		double num_frac = (double) (numinsideAinB + numinsideBinA)
 				/ (double) (numinsideAinB + numinsideBinA + intersection);
@@ -118,16 +129,17 @@ public class DistancesSnomed {
 
 	public double IC_measure(long idConcept) {
 		ArrayList<Long> ancestorsnode = snomed.getAncestors(idConcept);
-		System.out.print("Antecesor->" + ancestorsnode.size());
+		//System.out.print("\nAntecesor->" + ancestorsnode.size());
 		ArrayList<Long> descendantsnode = snomed.getDescendants(idConcept);
 		int leafs = getLeafNodes(descendantsnode);
-		System.out.print("LEAFS" + leafs + "\n");
+		//System.out.print("\nLEAFS" + leafs + "\n");
 		double icvalue = 0.0;
-		double numer = ((double) leafs / (double) ancestorsnode.size()) + 1;
+		double numer = ((double) leafs / (double) ancestorsnode.size() + 1);
 		long entity = 138875005;
 		int denom = snomed.getDescendants(entity).size() + 1;
-		System.out.print("Entity 352567->" + denom + "\n");
+		//System.out.print("Entity 352567->" + denom + "\n");
 		double resultdiv = (double) numer / (double) denom;
+		//System.out.print("Probability->" + resultdiv+ "\n");
 
 		icvalue = -Math.log10(resultdiv);
 
@@ -136,16 +148,17 @@ public class DistancesSnomed {
 	}
 
 	public double IC_measureSubGraph(long idConcept, LinkedHashMap<Long, Integer> subGraph) {
-		ArrayList<Long> ancestorsnode = snomed.getAncestorsSubGraph(idConcept, subGraph);
-		// System.out.print("Antecesor"+ancestorsnode.size());
+		ArrayList<Long> ancestorsnode = snomed.getAncestorsSubGraph(idConcept, subGraph); //Mirar porque no coincide
+		System.out.print("Node->"+idConcept+"\nAntecesors"+ancestorsnode+"\n");
 		ArrayList<Long> descendantsnode = snomed.getDescendantsSubGraph(idConcept, subGraph);
+		System.out.print("\nDESCENDANTS NODE"+descendantsnode);
 		int leafs = getLeafNodesSubGraph(descendantsnode, subGraph);
-		System.out.print("LEAFS" + leafs + "\n");
+		System.out.print("\nLEAFS" + leafs + "\n");
 		double icvalue = 0.0;
 
-		double numer = ((double) leafs / (double) ancestorsnode.size()) + 1;
+		double numer = ((double) leafs / (double) ancestorsnode.size()+1);
 		int denom = subGraph.size() + 1;
-		System.out.print("RES->" + numer + "/" + denom + "\n");
+		System.out.print("\nRES->" + numer + "/" + denom + "\n");
 		double resultdiv = (double) numer / (double) denom;
 
 		icvalue = -Math.log10(resultdiv);
@@ -153,14 +166,14 @@ public class DistancesSnomed {
 		return icvalue;
 	}
 
-	public double resnisk_Distance(long idConcept1, long idConcept2) {
+	public double resnik_Distance(long idConcept1, long idConcept2) {
 		long lcsConcept = snomed.getLCS(idConcept1, idConcept2);
 		return IC_measure(lcsConcept);
 	}
 
-	public double resnisk_DistanceSubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
+	public double resnik_DistanceSubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
 		long lcsConcept = snomed.getLCS(idConcept1, idConcept2);
-		System.out.print("\nLCS" + lcsConcept);
+		//System.out.print("\nLCS RESNIK" + lcsConcept);
 		if (subgraph.containsKey(lcsConcept))
 			return IC_measureSubGraph(lcsConcept, subgraph);
 		return 0;
@@ -169,15 +182,16 @@ public class DistancesSnomed {
 
 	public double lin_Distance(long idConcept1, long idConcept2) {
 		double resultlin = 0.0, num = 0.0, div = 0.0;
-		num = 2 * resnisk_Distance(idConcept1, idConcept2);
+		num = 2 * resnik_Distance(idConcept1, idConcept2);
 		div = IC_measure(idConcept1) + IC_measure(idConcept2);
 		resultlin = num / div;
 		return resultlin;
 	}
 
 	public double lin_DistanceSubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
+		System.out.print("DISTANCIA LIN SUBGRAPH\n");
 		double resultlin = 0.0, num = 0.0, div = 0.0;
-		num = 2 * resnisk_DistanceSubGraph(idConcept1, idConcept2, subgraph);
+		num = 2 * resnik_DistanceSubGraph(idConcept1, idConcept2, subgraph);
 		div = IC_measureSubGraph(idConcept1, subgraph) + IC_measureSubGraph(idConcept2, subgraph);
 		resultlin = num / div;
 		return resultlin;
@@ -187,8 +201,8 @@ public class DistancesSnomed {
 	public double jianConrath_Distance(long idConcept1, long idConcept2) {
 		double resultjc = 0.0, num = 0.0, div = 0.0, res = 0.0;
 		div = IC_measure(idConcept1) + IC_measure(idConcept2);
-		res = 2 * resnisk_Distance(idConcept1, idConcept2);
-		resultjc = div - (2 * resnisk_Distance(idConcept1, idConcept2));
+		res = 2 * resnik_Distance(idConcept1, idConcept2);
+		resultjc = div - (2 * resnik_Distance(idConcept1, idConcept2));
 		return resultjc;
 	}
 
@@ -197,9 +211,9 @@ public class DistancesSnomed {
 		double resultjc = 0.0, num = 0.0, div = 0.0, res = 0.0;
 		div = IC_measureSubGraph(idConcept1, subgraph) + IC_measureSubGraph(idConcept2, subgraph);
 		System.out.print("DIV" + div + "\n");
-		res = 2 * resnisk_DistanceSubGraph(idConcept1, idConcept2, subgraph);
+		res = 2 * resnik_DistanceSubGraph(idConcept1, idConcept2, subgraph);
 		System.out.print("RES" + res + "\n");
-		resultjc = div - (2 * resnisk_DistanceSubGraph(idConcept1, idConcept2, subgraph));
+		resultjc = div - (2 * resnik_DistanceSubGraph(idConcept1, idConcept2, subgraph));
 		return resultjc;
 
 	}

@@ -354,7 +354,7 @@ public class DistanceController {
 	@RequestMapping(value = "/getResnikDistanceSnomed/{id1}/{id2}", method = RequestMethod.GET)
 	@ResponseBody
 	public double resnik_Distance(@PathVariable("id1") long idConcept1, @PathVariable("id2") long idConcept2) {
-		return distancesn.resnisk_Distance(idConcept1, idConcept2);
+		return distancesn.resnik_Distance(idConcept1, idConcept2);
 	}
 
 	@ApiOperation(value = "Get Lin Distance By Id", tags = "DistancesSnomedCT")
@@ -408,7 +408,7 @@ public class DistanceController {
 	public double getResnikDistanceSnomedSubGraph(@PathVariable("id1") long idConcept1,
 			@PathVariable("id2") long idConcept2, @RequestBody GraphSnomed graph) {
 		LinkedHashMap<Long, Integer> g = sn.getSubGraph(graph);
-		return distancesn.resnisk_DistanceSubGraph(idConcept1, idConcept2, g);
+		return distancesn.resnik_DistanceSubGraph(idConcept1, idConcept2, g);
 	}
 
 	@ApiOperation(value = "Get Lin Distance By Id", tags = "DistancesSnomedSubGraphCT")
