@@ -45,8 +45,7 @@ public class DistancesWordnet {
 		return distance;
 	}
 
-	public double WPSimilaritySubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree,
-			WordnetLibrary dictionary) throws JWNLException {
+	public double WPSimilaritySubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree) throws JWNLException {
 		// System.out.print("ENTRA EN SUBTREE");
 		double result = 0.0;
 		Synset lcs = dictionary.getLeastCommonSubsumer(s1, s2);// Y si en el subarbol no estuviera el LCS?
@@ -63,15 +62,24 @@ public class DistancesWordnet {
 		return result;
 	}
 
+	public double WPSimilaritySubTree(Synset root, Synset s1, Synset s2) throws JWNLException {
+		LinkedHashMap<Synset, ArrayList<Synset>> tree = dictionary.getSubarbolWordnet(root);
+		return WPSimilaritySubTree(s1, s2, tree);
+	}
+	
 	public double Distance_WP(Synset s1, Synset s2, WordnetLibrary dictionary) {
 		return 1 - WPSimilarity(s1, s2, dictionary);
 	}
 
 	public double Distance_WPSubTree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree,
 			WordnetLibrary dictionary) throws JWNLException {
-		return 1 - WPSimilaritySubTree(s1, s2, tree, dictionary);
+		return 1 - WPSimilaritySubTree(s1, s2, tree);
 	}
 
+	public double Distance_WPSubTree(Synset root, Synset s1, Synset s2) throws JWNLException {
+		return 1 - WPSimilaritySubTree(root, s1, s2);
+	}
+	
 	public double Sanchez_DistanceSubtree(Synset s1, Synset s2, LinkedHashMap<Synset, ArrayList<Synset>> tree,
 			WordnetLibrary dictionary) {
 
@@ -122,6 +130,11 @@ public class DistancesWordnet {
 		return distance_sanchez;
 
 	}
+	
+	public double Sanchez_Distance(Synset root, Synset s1, Synset s2) {
+		LinkedHashMap<Synset, ArrayList<Synset>> tree = dictionary.getSubarbolWordnet(root);
+		return Sanchez_Distance(s1, s2, dictionary);
+	}
 
 	public int nodeLeafs(Synset synset) throws JWNLException {
 
@@ -145,16 +158,7 @@ public class DistancesWordnet {
 		return leaves;
 	}
 
-	/*
-	 * public int maxLeaves() { int max_leaves =0; for(Synset h:alltaxonomy){ //
-	 * System.out.print("\n\nLISTA HYPONYMS->"+ h.getWord(0).getLemma()+"\t");
-	 * ArrayList<Synset> hijosmax = dictionary.getHyponyms(h);
-	 * 
-	 * //System.out.print("HIJOS->"+hijosmax.size()+"\n"); if(hijosmax.size()==0){
-	 * max_leaves++; }
-	 * 
-	 * } }
-	 */
+
 
 	public double IC_measure(Synset synset, WordnetLibrary dictionary) throws JWNLException, IOException {
 		/* IC Sanchez(c) =-log( (|leaves(c)|/|hypernyms(c)|+1)/max_leaves+1)) */
@@ -240,6 +244,12 @@ public class DistancesWordnet {
 		return icvalue;
 
 	}
+	
+	public double IC_measureSubTree(Synset root,Synset s1) throws JWNLException, IOException {
+		LinkedHashMap<Synset, ArrayList<Synset>> tree = dictionary.getSubarbolWordnet(root);
+		return IC_measureSubTree(s1, tree, dictionary);
+	}
+	
 
 	public int getLeafsWordnet() throws IOException, JWNLException {
 		// WordnetLibrary dictionary = new WordnetLibrary();
@@ -280,6 +290,11 @@ public class DistancesWordnet {
 		}
 		return 0.0;
 	}
+	
+	public double resnisk_DistanceSubTree(Synset root, Synset s1, Synset s2) throws JWNLException, IOException {
+		LinkedHashMap<Synset, ArrayList<Synset>> tree = dictionary.getSubarbolWordnet(root);
+		return resnisk_DistanceSubTree(s1, s2, tree, dictionary);
+	}
 
 	public double lin_Distance(Synset s1, Synset s2, WordnetLibrary dictionary) throws JWNLException, IOException {
 		double resultlin = 0.0, num = 0.0, div = 0.0;
@@ -305,6 +320,11 @@ public class DistancesWordnet {
 			return 0.0;
 	}
 
+	public double lin_DistanceSubTree(Synset root, Synset s1, Synset s2) throws JWNLException, IOException {
+		LinkedHashMap<Synset, ArrayList<Synset>> tree = dictionary.getSubarbolWordnet(root);
+		return lin_DistanceSubTree(s1, s2, tree, dictionary);
+	}
+	
 	public double jianConrath_Distance(Synset s1, Synset s2, WordnetLibrary dictionary)
 			throws JWNLException, IOException {
 		double resultjc = 0.0, num = 0.0, div = 0.0, res = 0.0;
@@ -333,6 +353,11 @@ public class DistancesWordnet {
 		return resultjc;
 	}
 
+	public double jianConrath_DistanceSubTree(Synset root, Synset s1, Synset s2) throws JWNLException, IOException {
+		LinkedHashMap<Synset, ArrayList<Synset>> tree = dictionary.getSubarbolWordnet(root);
+		return jianConrath_DistanceSubTree(s1, s2, tree, dictionary);
+	}
+	
 	/*
 	 * public static void main(String[] arg) throws JWNLException, IOException{
 	 * 

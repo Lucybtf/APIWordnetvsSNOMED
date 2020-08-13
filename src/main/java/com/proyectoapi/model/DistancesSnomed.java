@@ -34,7 +34,7 @@ public class DistancesSnomed {
 
 	}
 
-	public double wuSimilaritySubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
+	public double getWuSimilaritySubTree(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
 		HashMap<Long, Integer> id1 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept1, subgraph);
 		System.out.print("\nANCESTORs id1"+id1+"\n");
 		HashMap<Long, Integer> id2 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept2, subgraph);
@@ -66,6 +66,12 @@ public class DistancesSnomed {
 			return 0;
 	}
 
+	public  double getWuSimilaritySubTree(long idConceptroot, long idConcept1, long idConcept2) {
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
+		//double res =getWuSimilaritySubTree(idConcept1, idConcept2, subtree);
+		return getWuSimilaritySubTree(idConcept1, idConcept2, subtree);
+	}
+	
 	public double SanchezDistance(long idConcept1, long idConcept2) {
 		Set<Long> id1 = snomed.getAncestorsDistanciaMinima(idConcept1).keySet();
 		System.out.print("\nSET1->"+id1+"\n");
@@ -99,6 +105,12 @@ public class DistancesSnomed {
 		return distance_sanchez;
 	}
 
+	
+	public  double getSanchezDistanceSubTree(long idConceptroot, long idConcept1, long idConcept2) {
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
+		return SanchezDistanceSubGraph(idConcept1, idConcept2, subtree);
+	}
+	
 	public int getLeafNodes(ArrayList<Long> descendants) {
 		int leafs = 0;
 		for (Long node : descendants) {
@@ -166,6 +178,11 @@ public class DistancesSnomed {
 		return icvalue;
 	}
 
+	public  double getIC_measureSubTree(long idConceptroot, long idConcept1) {
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
+		return IC_measureSubGraph(idConcept1, subtree);
+	}
+	
 	public double resnik_Distance(long idConcept1, long idConcept2) {
 		long lcsConcept = snomed.getLCS(idConcept1, idConcept2);
 		return IC_measure(lcsConcept);
@@ -178,6 +195,11 @@ public class DistancesSnomed {
 			return IC_measureSubGraph(lcsConcept, subgraph);
 		return 0;
 
+	}
+	
+	public  double getResnik_DistanceSubTree(long idConceptroot, long idConcept1, long idConcept2) {
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
+		return resnik_DistanceSubGraph(idConcept1, idConcept2, subtree);
 	}
 
 	public double lin_Distance(long idConcept1, long idConcept2) {
@@ -196,6 +218,11 @@ public class DistancesSnomed {
 		resultlin = num / div;
 		return resultlin;
 
+	}
+	
+	public  double getLin_DistanceSubTree(long idConceptroot, long idConcept1, long idConcept2) {
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
+		return lin_DistanceSubGraph(idConcept1, idConcept2, subtree);
 	}
 
 	public double jianConrath_Distance(long idConcept1, long idConcept2) {
@@ -218,7 +245,11 @@ public class DistancesSnomed {
 
 	}
 
-	public static void main(String[] args) throws Exception {
+	public  double getJianConrath_DistanceTree(long idConceptroot, long idConcept1, long idConcept2) {
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
+		return jianConrath_DistanceSubGraph(idConcept1, idConcept2, subtree);
+	}
+	/*public static void main(String[] args) throws Exception {
 		DistancesSnomed distancesct = new DistancesSnomed();
 		long id = 123037004, id2 = 22298006, id3 = 80891009, clinical_finding = 404684003, id4 = 57809008,
 				id5 = 123397009, id6 = 5626501, id7 = 56265001, id8 = 25105200, id9 = 417163006, id10 = 123946008,
@@ -226,5 +257,5 @@ public class DistancesSnomed {
 		long id4nivel = 92993003;
 
 		System.out.print("DISTANCE" + distancesct.wuSimilarity(id2, id4));
-	}
+	}*/
 }

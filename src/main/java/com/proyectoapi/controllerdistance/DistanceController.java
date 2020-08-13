@@ -87,6 +87,28 @@ public class DistanceController {
 		return distance.Distance_WPSubTree(s1, s2, tree, wl);
 	}
 
+	@ApiOperation(value = "Get Wu and Palmer distance in Wordnet", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getWPDistanceAllSubTree/{offsetroot}/{offset1}/{offset2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getWPDistanceAllSubTree(@PathVariable("offset1") Long offsetroot, @PathVariable("offset1") Long offset1, @PathVariable("offset2") Long offset2)
+			throws JWNLException {
+		Synset root = wl.getSynset(offsetroot.longValue());
+		Synset s1 = wl.getSynset(offset1.longValue());
+		Synset s2 = wl.getSynset(offset2.longValue());
+		return distance.Distance_WPSubTree(root, s1, s2);
+	}
+	
+	@ApiOperation(value = "Get Wu and Palmer distance in Wordnet", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getWPDistanceAllSubTree/{wordroot}/{senseroot}/{word1}/{sense1}/{word2}/{sense2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getWPDistanceAllSubTree(@PathVariable("wordroot") String wordroot, @PathVariable("senseroot") int senseroot, @PathVariable("word1") String word1, @PathVariable("sense1") int sense1,
+			@PathVariable("word2") String word2, @PathVariable("sense2") int sense2) throws JWNLException {
+		Synset root = wl.getSynset(wordroot, POS.NOUN, senseroot);
+		Synset s1 = wl.getSynset(word1, POS.NOUN, sense1);
+		Synset s2 = wl.getSynset(word2, POS.NOUN, sense2);
+		return distance.Distance_WPSubTree(root, s1, s2);
+	}
+	
 	@ApiOperation(value = "Get Sanchez distance in Wordnet", tags = "DistancesWordnet")
 	@RequestMapping(value = "/getSanchezDistance/{offset1}/{offset2}", method = RequestMethod.GET)
 	@ResponseBody
@@ -136,6 +158,29 @@ public class DistanceController {
 		return distance.Sanchez_DistanceSubtree(s1, s2, tree, wl);
 	}
 
+	@ApiOperation(value = "Get Sanchez distance in Wordnet", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getSanchezDistanceAllSubTree/{offsetroot}/{offset1}/{offset2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getSanchezDistanceAllSubTree(@PathVariable("offsetroot") Long offsetroot, @PathVariable("offset1") Long offset1, @PathVariable("offset2") Long offset2)
+			throws JWNLException {
+		Synset root = wl.getSynset(offsetroot.longValue());
+		Synset s1 = wl.getSynset(offset1.longValue());
+		Synset s2 = wl.getSynset(offset2.longValue());
+		return distance.Sanchez_Distance(root, s1, s2);
+	}
+
+	@ApiOperation(value = "Get Sanchez distance in Wordnet", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getSanchezDistanceAllSubTree/{wordroot}/{senseroot}/{word1}/{sense1}/{word2}/{sense2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getSanchezDistanceAllSubTree(@PathVariable("wordroot") String wordroot, @PathVariable("senseroot") int senseroot, @PathVariable("word1") String word1, @PathVariable("sense1") int sense1,
+			@PathVariable("word2") String word2, @PathVariable("sense2") int sense2) {
+		Synset root = wl.getSynset(wordroot, POS.NOUN, senseroot);
+		Synset s1 = wl.getSynset(word1, POS.NOUN, sense1);
+		Synset s2 = wl.getSynset(word2, POS.NOUN, sense2);
+		return distance.Sanchez_Distance(s1, s2, wl);
+	}
+	
+	
 	@ApiOperation(value = "Get Sanchez IC of a Synset", tags = "DistancesWordnet")
 	@RequestMapping(value = "/getSanchezIC/{offset}", method = RequestMethod.GET)
 	@ApiImplicitParam(name = "offset", value = "offset", dataType = DataType.LONG, paramType = ParamType.PATH)
@@ -181,6 +226,27 @@ public class DistanceController {
 		return distance.IC_measureSubTree(s1, tree, wl);
 	}
 
+	
+	
+	@ApiOperation(value = "Get Sanchez IC of a Synset", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getSanchezICAllSubTree/{offsetroot}/{offset}", method = RequestMethod.GET)
+	@ApiImplicitParam(name = "offset", value = "offset", dataType = DataType.LONG, paramType = ParamType.PATH)
+	@ResponseBody
+	public double getSanchezICAllSubTree(@PathVariable("offsetroot") Long offsetroot, @PathVariable("offset") Long offset) throws JWNLException, IOException {
+		Synset root = wl.getSynset(offsetroot.longValue());
+		Synset s1 = wl.getSynset(offset.longValue());
+		return distance.IC_measureSubTree(root, s1);
+	}
+
+	@ApiOperation(value = "Get Sanchez IC of a Word and  a Sense", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getSanchezICAllSubTree/{wordroot}/{senseroot}/{word}/{sense}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getSanchezICAllSubTree(@PathVariable("wordroot") String wordroot, @PathVariable("senseroot") int senseroot, @PathVariable("word") String word1, @PathVariable("sense") int sense)
+			throws JWNLException, IOException {
+		Synset s1 = wl.getSynset(word1, POS.NOUN, sense);
+		return distance.IC_measure(s1, wl);
+	}
+	
 	@ApiOperation(value = "Get Resnisk Distance", tags = "DistancesWordnet")
 	@RequestMapping(value = "/getResniskDistance/{offset1}/{offset2}", method = RequestMethod.GET)
 	@ResponseBody
@@ -225,6 +291,29 @@ public class DistanceController {
 		LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<>();
 
 		tree = wl.convertTreeToMap(treeResult);
+		Synset s1 = wl.getSynset(word1, POS.NOUN, sense1);
+		Synset s2 = wl.getSynset(word2, POS.NOUN, sense2);
+		return distance.resnisk_Distance(s1, s2, wl);
+	}
+	
+	
+	@ApiOperation(value = "Get Resnisk Distance", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getResniskDistanceAllSubTree/{offsetroot}/{offset1}/{offset2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getResniskDistanceAllSubTree(@PathVariable("offsetroot") Long offsetroot, @PathVariable("offset1") Long offset1, @PathVariable("offset2") Long offset2)
+			throws JWNLException, IOException {
+		Synset root = wl.getSynset(offsetroot.longValue());
+		Synset s1 = wl.getSynset(offset1.longValue());
+		Synset s2 = wl.getSynset(offset2.longValue());
+		return distance.resnisk_Distance(s1, s2, wl);
+	}
+
+	@ApiOperation(value = "Get Resnisk Distance", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getResniskDistanceAllSubTree/{wordroot}/{senseroot}/{word1}/{sense1}/{word2}/{sense2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getResniskDistanceAllSubTree(@PathVariable("wordroot") String wordroot, @PathVariable("senseroot") int senseroot, @PathVariable("word1") String word1, @PathVariable("sense1") int sense1,
+			@PathVariable("word2") String word2, @PathVariable("sense2") int sense2) throws JWNLException, IOException {
+		Synset root = wl.getSynset(wordroot, POS.NOUN, senseroot);
 		Synset s1 = wl.getSynset(word1, POS.NOUN, sense1);
 		Synset s2 = wl.getSynset(word2, POS.NOUN, sense2);
 		return distance.resnisk_Distance(s1, s2, wl);
@@ -279,6 +368,28 @@ public class DistanceController {
 		return distance.lin_DistanceSubTree(s1, s2, tree, wl);
 	}
 
+	@ApiOperation(value = "Get Lin Distance", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getLinDistanceAllSubTree/{offsetroot}/{offset1}/{offset2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getLinDistanceAllSubTree(@PathVariable("offsetroot") long offsetroot, @PathVariable("offset1") long offset1, @PathVariable("offset2") long offset2)
+			throws JWNLException, IOException {
+		Synset root = wl.getSynset(offsetroot);
+		Synset s1 = wl.getSynset(offset1);
+		Synset s2 = wl.getSynset(offset2);
+		return distance.lin_DistanceSubTree(root, s1, s2);
+	}
+
+	@ApiOperation(value = "Get Lin Distance", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getLinDistanceAllSubTree/{wordroot}/{senseroot}/{word1}/{sense1}/{word2}/{sense2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getLinDistanceAllSubTree(@PathVariable("wordroot") String wordroot, @PathVariable("senseroot") int senseroot, @PathVariable("word1") String word1, @PathVariable("sense1") int sense1,
+			@PathVariable("word2") String word2, @PathVariable("sense2") int sense2) throws JWNLException, IOException {
+		Synset root = wl.getSynset(wordroot, POS.NOUN, senseroot);
+		Synset s1 = wl.getSynset(word1, POS.NOUN, sense1);
+		Synset s2 = wl.getSynset(word2, POS.NOUN, sense2);
+		return distance.lin_DistanceSubTree(root, s1, s2);
+	}
+	
 	@ApiOperation(value = "Get Jian and Conrath Distance", tags = "DistancesWordnet")
 	@RequestMapping(value = "/getJianConrathDistance/{offset1}/{offset2}", method = RequestMethod.GET)
 	@ResponseBody
@@ -328,6 +439,29 @@ public class DistanceController {
 		return distance.jianConrath_DistanceSubTree(s1, s2, tree, wl);
 	}
 
+	
+	@ApiOperation(value = "Get Jian and Conrath Distance", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getJianConrathDistanceAllSubTree/{offsetroot}/{offset1}/{offset2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getJianConrathDistanceAllSubTree(@PathVariable("offsetroot") long offsetroot, @PathVariable("offset1") long offset1, @PathVariable("offset2") long offset2)
+			throws JWNLException, IOException {
+		Synset root = wl.getSynset(offsetroot);
+		Synset s1 = wl.getSynset(offset1);
+		Synset s2 = wl.getSynset(offset2);
+		return distance.jianConrath_DistanceSubTree(root, s1, s2);
+	}
+
+	@ApiOperation(value = "Get Jian and Conrath Distance", tags = "DistancesWordnet")
+	@RequestMapping(value = "/getJianConrathDistanceAllSubTree/{wordroot}/{senseroot}/{word1}/{sense1}/{word2}/{sense2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getJianConrathDistanceAllSubTree(@PathVariable("wordroot") String wordroot, @PathVariable("senseroot") int senseroot, @PathVariable("word1") String word1, @PathVariable("sense1") int sense1,
+			@PathVariable("word2") String word2, @PathVariable("sense2") int sense2) throws JWNLException, IOException {
+		Synset root = wl.getSynset(wordroot, POS.NOUN, senseroot);
+		Synset s1 = wl.getSynset(word1, POS.NOUN, sense1);
+		Synset s2 = wl.getSynset(word2, POS.NOUN, sense2);
+		return distance.jianConrath_Distance(s1, s2, wl);
+	}
+	
 	/* SNOMED CT CONTROLLER */
 	@ApiOperation(value = "Get Wu and Palmer distance By Id", tags = "DistancesSnomedCT")
 	@RequestMapping(value = "/getWPDistanceSnomed/{id1}/{id2}", method = RequestMethod.GET)
@@ -379,7 +513,7 @@ public class DistanceController {
 			@RequestBody GraphSnomed graph) {
 
 		LinkedHashMap<Long, Integer> g = sn.getSubGraph(graph);
-		return distancesn.wuSimilaritySubGraph(id1, id2, g);
+		return distancesn.getWuSimilaritySubTree(id1, id2, g);
 	}
 
 	@ApiOperation(value = "Get Sanchez distance By Id", tags = "DistancesSnomedSubGraphCT")
@@ -430,5 +564,48 @@ public class DistanceController {
 		LinkedHashMap<Long, Integer> g = sn.getSubGraph(graph);
 		return distancesn.jianConrath_DistanceSubGraph(id1, id2, g);
 	}
+	
+	@ApiOperation(value = "Get Wu and Palmer distance By Id", tags = "DistancesSnomedCT")
+	@RequestMapping(value = "/getWPDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getWPDistanceSnomedAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") Long id1, @PathVariable("id2") Long id2) {
+		return distancesn.getWuSimilaritySubTree(rootid, id1, id2);
+	}
+
+	@ApiOperation(value = "Get Sanchez distance By Id", tags = "DistancesSnomedCT")
+	@RequestMapping(value = "/getSanchezDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double getSanchezDistanceSnomedAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") Long id1, @PathVariable("id2") Long id2) {
+		return distancesn.SanchezDistance(id1, id2);
+	}
+
+	@ApiOperation(value = "Get Sanchez IC By Id", tags = "DistancesSnomedCT")
+	@RequestMapping(value = "/getSanchezICSnomedAllSubTree/{rootid}/{id1}", method = RequestMethod.GET)
+	@ResponseBody
+	public double IC_measureAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long id1) {
+		return distancesn.IC_measure(id1);
+	}
+
+	@ApiOperation(value = "Get Resnisk Distance By Id", tags = "DistancesSnomedCT")
+	@RequestMapping(value = "/getResnikDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double resnik_DistanceAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long idConcept1, @PathVariable("id2") long idConcept2) {
+		return distancesn.resnik_Distance(idConcept1, idConcept2);
+	}
+
+	@ApiOperation(value = "Get Lin Distance By Id", tags = "DistancesSnomedCT")
+	@RequestMapping(value = "/getLinDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double lin_DistanceAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long id1, @PathVariable("id2") long id2) {
+		return distancesn.lin_Distance(id1, id2);
+	}
+
+	@ApiOperation(value = "Get Jian and Conrath Distance By Id", tags = "DistancesSnomedCT")
+	@RequestMapping(value = "/getjianConrathDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
+	@ResponseBody
+	public double jianConrath_DistanceAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long id1, @PathVariable("id1") long id2) {
+		return distancesn.jianConrath_Distance(id1, id2);
+	}
+
 
 }

@@ -46,7 +46,7 @@ public class DistanceWordnetTest {
 	     tree = wordnetTest.getSubarbolWordnet(animal,7, tree); //Testado con cat
 	//	System.out.print("DISTANCIA SUBARBOL"+distance.WPSimilaritySubTree(feline, cat, tree, wordnetTest));
 	     double result =0.8571428571428571;
-		assertEquals(result, distance.WPSimilaritySubTree(feline, cat, tree, wordnetTest), 0.00);
+		assertEquals(result, distance.WPSimilaritySubTree(feline, cat, tree), 0.00);
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class DistanceWordnetTest {
 		double result = 1 - 0.8571428571428571;
 		//System.out.print("DISTANCIA ARBOL"+distance.WPSimilarity(cat, animal,wordnetTest)+" rsult"+ result+"\n");
 
-		assertEquals(result, 1 - distance.WPSimilaritySubTree(feline, cat, tree, wordnetTest), 0.00);
+		assertEquals(result, 1 - distance.WPSimilaritySubTree(feline, cat, tree), 0.00);
 	}
 	
 	

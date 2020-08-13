@@ -31,7 +31,7 @@ public class SwaggerConfig {
 				/// .paths(PathSelectors.regex("/api/.*"))
 				// .paths(PathSelectors.ant("/swagger2-demo"))
 				.build().apiInfo(apiInfoWordnet());
-		// .useDefaultResponseMessages(true)
+		//.useDefaultResponseMessages(false);
 		// .forCodeGeneration(true);
 		// @formatter:on
 	}
