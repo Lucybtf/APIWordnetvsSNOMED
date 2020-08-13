@@ -576,35 +576,35 @@ public class DistanceController {
 	@RequestMapping(value = "/getSanchezDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
 	@ResponseBody
 	public double getSanchezDistanceSnomedAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") Long id1, @PathVariable("id2") Long id2) {
-		return distancesn.SanchezDistance(id1, id2);
+		return distancesn.getSanchezDistanceSubTree(rootid, id1, id2);
 	}
 
 	@ApiOperation(value = "Get Sanchez IC By Id", tags = "DistancesSnomedCT")
 	@RequestMapping(value = "/getSanchezICSnomedAllSubTree/{rootid}/{id1}", method = RequestMethod.GET)
 	@ResponseBody
 	public double IC_measureAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long id1) {
-		return distancesn.IC_measure(id1);
+		return distancesn.getIC_measureSubTree(rootid, id1);
 	}
 
 	@ApiOperation(value = "Get Resnisk Distance By Id", tags = "DistancesSnomedCT")
 	@RequestMapping(value = "/getResnikDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
 	@ResponseBody
-	public double resnik_DistanceAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long idConcept1, @PathVariable("id2") long idConcept2) {
-		return distancesn.resnik_Distance(idConcept1, idConcept2);
+	public double resnik_DistanceAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long id1, @PathVariable("id2") long id2) {
+		return distancesn.getResnik_DistanceSubTree(rootid, id1, id2);
 	}
 
 	@ApiOperation(value = "Get Lin Distance By Id", tags = "DistancesSnomedCT")
 	@RequestMapping(value = "/getLinDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
 	@ResponseBody
 	public double lin_DistanceAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long id1, @PathVariable("id2") long id2) {
-		return distancesn.lin_Distance(id1, id2);
+		return distancesn.getLin_DistanceSubTree(rootid, id1, id2);
 	}
 
 	@ApiOperation(value = "Get Jian and Conrath Distance By Id", tags = "DistancesSnomedCT")
 	@RequestMapping(value = "/getjianConrathDistanceSnomedAllSubTree/{rootid}/{id1}/{id2}", method = RequestMethod.GET)
 	@ResponseBody
 	public double jianConrath_DistanceAllSubTree(@PathVariable("rootid") Long rootid, @PathVariable("id1") long id1, @PathVariable("id1") long id2) {
-		return distancesn.jianConrath_Distance(id1, id2);
+		return distancesn.getJianConrath_DistanceTree(rootid, id1, id2);
 	}
 
 
