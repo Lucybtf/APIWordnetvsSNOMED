@@ -10,6 +10,13 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+
+/**
+ * Class SwaggerConfig: Esta clase gestiona la configuración de la herramienta de Swagger
+ * @author Lucía Batista Flores
+ * @version 1.0
+ */
+
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
@@ -21,32 +28,17 @@ public class SwaggerConfig {
 
 				.groupName("Wordnet").select()
 				.apis(RequestHandlerSelectors.basePackage("com.proyectoapi.controllerwordnet"))
-				// .apis(Predicates.not(RequestHandlerSelectors.basePackage("com.proyectoapi.controllerdistance")))
-				// .apis(Predicates.not(RequestHandlerSelectors.basePackage("com.proyectoapi.controllersnomed")))
-				// .apis(Predicates.not(RequestHandlerSelectors.basePackage("org.springframework.boot")))
-				// .paths(selector)
-				// .paths(PathSelectors.any())
-				// .paths(Predicates.not(PathSelectors.regex("/basic-error-controller.*")))
-				// .paths(not(PathSelectors.regex("/error/.*")))
-				/// .paths(PathSelectors.regex("/api/.*"))
-				// .paths(PathSelectors.ant("/swagger2-demo"))
-				.build().apiInfo(apiInfoWordnet());
-		//.useDefaultResponseMessages(false);
-		// .forCodeGeneration(true);
-		// @formatter:on
+				.build().apiInfo(apiInfoWordnet());	
 	}
 
 	@Bean
 	public Docket apiSnomed() {
-		// @formatter:off
+		
 		return new Docket(DocumentationType.SWAGGER_2)
 
 				.groupName("SnomedCT").select()
 				.apis(RequestHandlerSelectors.basePackage("com.proyectoapi.controllersnomed"))
-				// .apis(Predicates.not(RequestHandlerSelectors.basePackage("com.proyectoapi.controllerdistance")))
-				// .apis(Predicates.not(RequestHandlerSelectors.basePackage("com.proyectoapi.controllerwordnet")))
-				.build();
-		// .apiInfo(apiInfoWordnet());
+				.build().apiInfo(apiInfoSnomed());
 	}
 
 	@Bean
@@ -58,8 +50,13 @@ public class SwaggerConfig {
 	}
 
 	private ApiInfo apiInfoWordnet() {
-		return new ApiInfoBuilder().title("Wordnet Library").description("Library for use Wordnet")
-				.version("Version 1.0").build();
+		return new ApiInfoBuilder().title("Wordnet Library").description("Library for use Wordnet Ontology")
+				.version("Version WordnetAPI 1.0").build();
+	}
+	
+	private ApiInfo apiInfoSnomed() {
+		return new ApiInfoBuilder().title("Snomed CT Library").description("Library for use Snomed CT Ontology")
+				.version("Version SnomedCTAPI 1.0").build();
 	}
 
 	private ApiInfo apiInfoDistances() {

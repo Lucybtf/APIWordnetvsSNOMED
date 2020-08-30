@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import net.didion.jwnl.JWNL;
@@ -25,60 +28,96 @@ import net.didion.jwnl.data.relationship.RelationshipFinder;
 import net.didion.jwnl.data.relationship.RelationshipList;
 import net.didion.jwnl.dictionary.Dictionary;
 
+/**
+ * Class WordnetLibrary: Esta clase gestiona la interacción con la base de datos de Wordnet.
+ * @author Lucía Batista Flores
+ * @version 1.0
+ */
+
 public class WordnetLibrary {
 
-	private String propertiesFile = "config\\file_properties.xml";
-	private String propertiesFile2 = "C:\\Users\\67382523\\workspace_tfm\\ProyectoLibreria\\config\\file_properties.xml";
-	private Dictionary dic;
+	static Logger logger = Logger.getLogger( WordnetLibrary.class.getName());
+	private Dictionary dic; /*Variable que se utiliza para gestionar la conexión a Wordnet*/ 
 
-	/* WordnetLibrary(): Constructor de la libreria */
+	/**
+	 * Constructor de la clase que interacciona con Wordnet
+	 */
 	public WordnetLibrary() {
 		try {
 		
 			Resource resource = new ClassPathResource("file_properties.xml");
-			System.out.print("PATH WORDNET" + resource.exists() + "resource" + resource.getFilename());
 
 			JWNL.initialize(resource.getInputStream());
 			dic = Dictionary.getInstance();
 		} catch (Exception e) {
-			// logdescription.error(e.toString());
-			System.out.print("ERROR" + e.toString());
+			e.printStackTrace();
 		}
 	}
 
-	/* getSynset: Por offset y por palabra y sense */
+	/**
+	 * Este método permite obtener un Synset de la ontologia de Wordnet
+	 * @param offSet - Número de tipo long que identifica de manera única a un Synset
+	 * @return Devuelve un Synset de la ontología
+	 * @throws JWNLException
+	 */
 	public Synset getSynset(long offSet) throws JWNLException {
 		return dic.getSynsetAt(POS.NOUN, offSet);
 	}
 
+	/**
+	 * Este método permite obtener un Synset de la ontología de Wordnet a través de la palabra y su significado
+	 * @param word - Palabra que identifica al synset
+	 * @param pos - Tipo de Palabra (Nombre)
+	 * @param sense - Número del significado del synset
+	 * @return Devuelve un Synset de la ontologia
+	 */
 	public Synset getSynset(String word, POS pos, int sense) {
 		Synset synset = null;
 		try {
 			IndexWord index = dic.lookupIndexWord(pos, word);
 			synset = index.getSense(sense);
 		} catch (JWNLException e) {
-			// logdescription.error("Error al crear el Synset",e);
+			e.printStackTrace();
 		}
 		return synset;
 	}
 
+	/**
+	 * Este método permite obtener la descripción asociada al Synset
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve un tipo String con la descripción
+	 */
 	public String getSense(Synset synset) {
 		return synset.getGloss();
 	}
 
+	/**
+	 * Este método permite obtener la descripción asociada al offset
+	 * @param offset - Número de tipo long que identifica de manera única a un Synset
+	 * @return Devuelve un tipo String con la descripción
+	 * @throws JWNLException
+	 */
 	public String getSense(long offset) throws JWNLException {
 		Synset s = dic.getSynsetAt(POS.NOUN, offset);
 		return s.getGloss();
 	}
 
-	/* getSenses: Descripciones de un palabra(word) */
+	/**
+	 * Este método permite obtener la descripción asociada a la palabra
+	 * @param word - Palabra que identifica al synset
+	 * @param pos - Tipo de Palabra (Nombre)
+	 * @param sense - Número del significado
+	 * @return Devuelve un tipo String con la descripción
+	 */
 	public String getSense(String word, POS pos, int sense) {
 		String description = null;
+		String message = "No synsets found for '" + word + "/" + pos.getKey() + "'";
 		try {
 			// Obtenemos el índice de la palabra
 			IndexWord index = dic.lookupIndexWord(pos, word);
+			
 			if (index == null)
-				System.out.println("No synsets found for '" + word + "/" + pos.getKey() + "'");
+				logger.log(Level.INFO, message);
 			else {
 				// Obtenemos todos los resultados de una palabra
 				Synset[] senses = index.getSenses();
@@ -87,58 +126,70 @@ public class WordnetLibrary {
 
 			}
 		} catch (JWNLException e) {
-			// logdescription.error(e.toString());
+			
+			logger.log(Level.INFO, message);
+			return message;
 		}
 		return description;
 	}
 
-	/* getNumberSenses: Obtienes el número de significados de cada palabra */
+	/**
+	 * Este método permite obtener el número de significados de cada palabra
+	 * @param word - Palabra que identifica al synset
+	 * @return Devuelve el entero que identifica al significado
+	 */
 	public int getNumberSenses(String word) {
 		IndexWord i = null;
+		int num = 0;
 		try {
 			i = dic.getIndexWord(POS.NOUN, word);
-
+			num =i.getSenseCount();
 		} catch (JWNLException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
-		return i.getSenseCount();
+		return num;
 
 	}
-
-	/* getLemma: Las distintas formas de obtener una forma de una palabra */
-	/*
-	 * public String getLemma(String word){ if (dic == null) return null;
-	 * 
-	 * IndexWord i = null; try { i = dic.lookupIndexWord(POS.NOUN, word); } catch
-	 * (JWNLException e) {} if (i == null) return null;
-	 * 
-	 * String lemma = i.getLemma(); //lemma = lemma.replace("_", " ");
-	 * 
-	 * return lemma; }
+	
+	/**
+	 * Este método permite obtener el listado de objectos Words de un Synset
+	 * @param s - Objeto Synset de la ontología
+	 * @return Devuelve un vector de objectos Words
 	 */
-
 	public Word[] getLemma(Synset s) {
 		return s.getWords();
 	}
 
+	/**
+	 * Este método permite obtener el listado de objectos Words de un Synset dado su offset
+	 * @param offset - Número de tipo long que identifica de manera única a un Synset
+	 * @return Devuelve un vector de objectos Words
+	 */
 	public Word[] getLemma(long offset) {
 		Synset s = null;
-		try {
-			s = getSynset(offset);
-		} catch (JWNLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return s.getWords();
+		Word[] w = null ;
+			try {
+				s = getSynset(offset);
+				s.getWords();
+			} catch (JWNLException e) {
+				e.printStackTrace();
+			}
+			return w;
+	
 	}
 
+	/**
+	 * Este método permite transformar el listado de Synsets en un vector de Cadenas
+	 * @param synonyms - Listados de Synsets
+	 * @return Devuelve el listado de cadenas que se corresponden con el listado de lemmas
+	 */
 	/* getLemma: Las distintas formas de obtener una forma de una palabra */
-	public ArrayList<String> getLemmas(ArrayList<Synset> synsets) {
-		HashSet<String> lemmaSet = new HashSet<String>();
-		ArrayList<String> lemmasaux = new ArrayList<String>();
+	public List<String> getLemmas(List<Synset> synonyms) {
+		HashSet<String> lemmaSet = new HashSet<>();
+		ArrayList<String> lemmasaux = new ArrayList<>();
 
-		for (Synset synset : synsets) {
+		for (Synset synset : synonyms) {
 			Word[] words = synset.getWords();
 			for (int i = 0; i < words.length; i++) {
 				lemmasaux.add(words[i].getLemma());
@@ -147,147 +198,274 @@ public class WordnetLibrary {
 				lemmaSet.add(lemma);
 		}
 
-		return new ArrayList<String>(lemmaSet);
+		return new ArrayList<>(lemmaSet);
 	}
 
-	/* getSynset: Obtiene el synset de la palabra */
 
-	/*
-	 * Relaciones entre Synsets: 1. Sinonimos 2. Antonimos 3. Hiponimos/hiperonimos
-	 * Ex.perro/animal 4. Holonimo/Meronimo 5. Cohiponimia
+	/**
+	 * Este método obtiene el listado de sinónimos de un Synset
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve el listado de objetos Synsets
 	 */
-
-	public ArrayList<Synset> getSynonyms(Synset synset) {
+	public List<Synset> getSynonyms(Synset synset) {
 		ArrayList<Synset> synonyms = null;
 		Synset[] synsets = null;
 		try {
 			IndexWord i = dic.lookupIndexWord(synset.getPOS(), synset.getWord(0).getLemma());
 			synsets = i.getSenses();
-			synonyms = new ArrayList<Synset>(Arrays.asList(synsets));
+			synonyms = new ArrayList<>(Arrays.asList(synsets));
 			synonyms.remove(synset);
 
 		} catch (JWNLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		;
 		return synonyms;
-		// return getSynonyms(synset.getWord(0).getLemma(), synset.getPOS(), 0);
+		 
 	}
-
-	public ArrayList<Synset> getSynonyms(long offset) throws JWNLException {
+	
+	/**
+	 * Este método obtiene el listado de sinónimos de un Synset dado su offset
+	 * @param offset - Número de tipo long que identifica de manera única a un Synset
+	 * @return Devuelve el listado de objetos Synsets
+	 * @throws JWNLException
+	 */
+	public List<Synset> getSynonyms(long offset) throws JWNLException {
 
 		Synset synset = getSynset(offset);
 		return getSynonyms(synset);
 	}
 
-	public ArrayList<Synset> getSynonyms(String word, POS pos, int sense) {
+	/**
+	 * Este método obtiene el listado de sinónimos de un Synset dado su offset
+	 * @param word - Palabra que identifica al synset
+	 * @param pos - Tipo de Palabra (Nombre)
+	 * @param sense - Número del significado
+	 * @return Devuelve el listado de objetos Synsets
+	 */
+	public List<Synset> getSynonyms(String word, POS pos, int sense) {
 		ArrayList<Synset> synonyms = null;
 		Synset[] synsets = null;
 		try {
 			IndexWord i = dic.lookupIndexWord(pos, word);
 			synsets = i.getSenses();
-			synonyms = new ArrayList<Synset>(Arrays.asList(synsets));
+			synonyms = new ArrayList<>(Arrays.asList(synsets));
 			synonyms.remove(sense);
 
 		} catch (JWNLException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
-		;
 		return synonyms;
 
 	}
 
-	public ArrayList<String> getSynonymsWords(String word, POS pos, int sense) {
-		ArrayList<Synset> synonyms = getSynonyms(word, pos, sense);
+	/**
+	 * Este método devuelve el listado de palabras sinónimas del Synset
+	 * @param word - Palabra que identifica al synset
+	 * @param pos - Tipo de Palabra (Nombre)
+	 * @param sense - Número del significado
+	 * @return Devuelve un listado de String con las palabras sinónimas
+	 */
+	public List<String> getSynonymsWords(String word, POS pos, int sense) {
+		List<Synset> synonyms = getSynonyms(word, pos, sense);
 		return getLemmas(synonyms);
 	}
 
-	public ArrayList<String> getSynonymsWords(Synset synset) {
+	/**
+	 * Este método devuelve el listado de palabras sinónimas del Synset
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve un listado de String con las palabras sinónimas
+	 */
+	public List<String> getSynonymsWords(Synset synset) {
 		return getLemmas(getSynonyms(synset));
 	}
 
-	public ArrayList<String> getSynonymsWords(long offset) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de palabras sinónimas del Synset
+	 * @param offset - Número de tipo long que identifica de manera única a un Synset
+	 * @return Devuelve un listado de String con las palabras sinónimas
+	 * @throws JWNLException
+	 */
+	public List<String> getSynonymsWords(long offset) throws JWNLException {
 		return getSynonymsWords(getSynset(offset));
 	}
 
-	public ArrayList<Synset> getHypernyms(Synset synset) throws JWNLException {
-		ArrayList<Synset> hyp = new ArrayList<Synset>();
+	/**
+	 * Este método devuelve el listado de hiperónimos del Synset
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve el listado de objetos Synsets
+	 * @throws JWNLException
+	 */
+	public List<Synset> getHypernyms(Synset synset) throws JWNLException {
+		ArrayList<Synset> hyp = new ArrayList<>();
 		PointerTargetNodeList listhyponyms = PointerUtils.getInstance().getDirectHypernyms(synset);
 
 		for (int it = 0; it < listhyponyms.size(); it++) {
 			PointerTargetNode node = (PointerTargetNode) listhyponyms.get(it);
 			Synset current = node.getSynset();
 			hyp.add(current);
-
 		}
 		return hyp;
 	}
 
-	public ArrayList<Synset> getHypernyms(long offset) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de hiperónimos del Synset
+	 * @param offset - Número de tipo long que identifica de manera única a un Synset
+	 * @return Devuelve el listado de objetos Synsets
+	 * @throws JWNLException
+	 */
+	public List<Synset> getHypernyms(long offset) throws JWNLException {
 		Synset synset = getSynset(offset);
 		return getHypernyms(synset);
 	}
 
-	public ArrayList<Synset> getHypernyms(String word, POS pos, int sense) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de hiperónimos del Synset
+	 * @param word - Palabra que identifica al synset
+	 * @param pos - Tipo de Palabra (Nombre)
+	 * @param sense - Número del significado
+	 * @return  Devuelve el listado de objetos Synsets
+	 * @throws JWNLException
+	 */
+	public List<Synset> getHypernyms(String word, POS pos, int sense) throws JWNLException {
 		Synset synset = getSynset(word, pos, sense);
 		return getHypernyms(synset);
 	}
 
-	public ArrayList<String> getHypernymsWords(Synset synset) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de palabras hiperónimas del Synset
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve el listado de palabras hipéronimas
+	 * @throws JWNLException
+	 */
+	public List<String> getHypernymsWords(Synset synset) throws JWNLException {
 		return getLemmas(getHypernyms(synset));
 	}
 
-	public ArrayList<String> getHypernymsWords(long offset) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de palabras hiperónimas del Synset
+	 * @param offset - Número de tipo long que identifica de manera única a un Synset
+	 * @return  Devuelve el listado de palabras hipéronimas
+	 * @throws JWNLException
+	 */
+	public List<String> getHypernymsWords(long offset) throws JWNLException {
 		return getLemmas(getHypernyms(offset));
 	}
 
-	public ArrayList<String> getHypernymsWords(String word, int sense, POS pos) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de palabras hiperónimas del Synset
+	 * @param word - Palabra que identifica al synset
+	 * @param pos - Tipo de Palabra (Nombre)
+	 * @param sense - Número del significado
+	 * @return Devuelve el listado de palabras hipéronimas
+	 * @throws JWNLException
+	 */
+	public List<String> getHypernymsWords(String word, int sense, POS pos) throws JWNLException {
 		Synset synset = getSynset(word, pos, sense);
 		return getLemmas(getHypernyms(synset));
 	}
 
-	public ArrayList<Synset> getHyponyms(Synset synset) throws JWNLException {
-		ArrayList<Synset> hyp = new ArrayList<Synset>();
+	/**
+	 * Este método devuelve el listado de hipónimos del Synset
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve el listado de objetos Synsets
+	 * @throws JWNLException
+	 */
+	public List<Synset> getHyponyms(Synset synset) throws JWNLException {
+		ArrayList<Synset> hyp = new ArrayList<>();
 		PointerTargetNodeList listhyponyms = PointerUtils.getInstance().getDirectHyponyms(synset);
 
 		for (int it = 0; it < listhyponyms.size(); it++) {
 			PointerTargetNode node = (PointerTargetNode) listhyponyms.get(it);
 			Synset current = node.getSynset();
 			hyp.add(current);
-
 		}
 		return hyp;
 	}
 
-	public ArrayList<Synset> getHyponyms(long offset) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de hipónimos del Synset
+	 * @param offset - Número de tipo long que identifica de manera única a un Synset
+	 * @return  Devuelve el listado de objetos Synsets
+	 * @throws JWNLException
+	 */
+	public List<Synset> getHyponyms(long offset) throws JWNLException {
 		Synset synset = getSynset(offset);
 		return getHyponyms(synset);
 	}
 
-	public ArrayList<Synset> getHyponyms(String word, int sense, POS pos) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de hipónimos del Synset
+	 * @param word - Palabra que identifica al synset
+	 * @param pos - Tipo de Palabra (Nombre)
+	 * @param sense - Número del significado
+	 * @return Devuelve el listado de objetos Synsets
+	 * @throws JWNLException
+	 */
+	public List<Synset> getHyponyms(String word, int sense, POS pos) throws JWNLException {
 		Synset synset = getSynset(word, pos, sense);
 		return getHyponyms(synset);
 	}
 
-	public ArrayList<String> getHyponymsWords(Synset synset) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de palabras hipónimas del Synset
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve el listado de palabras hipónimas
+	 * @throws JWNLException
+	 */
+	public List<String> getHyponymsWords(Synset synset) throws JWNLException {
 		return getLemmas(getHyponyms(synset));
 	}
 
-	public ArrayList<String> getHyponymsWords(long offset) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de palabras hipónimas del Synset
+	 * @param offset - Número de tipo long que identifica de manera única a un Synset
+	 * @return Devuelve el listado de palabras hipónimas
+	 * @throws JWNLException
+	 */
+	public List<String> getHyponymsWords(long offset) throws JWNLException {
 		Synset synset = getSynset(offset);
 		return getLemmas(getHyponyms(synset));
 
 	}
 
-	public ArrayList<String> getHyponymsWords(String word, int sense, POS pos) throws JWNLException {
+	/**
+	 * Este método devuelve el listado de palabras hipónimas del Synset
+	 * @param word - Palabra que identifica al synset
+	 * @param pos - Tipo de Palabra (Nombre)
+	 * @param sense - Número del significado
+	 * @return Devuelve el listado de palabras hipónimas
+	 * @throws JWNLException
+	 */
+	public List<String> getHyponymsWords(String word, int sense, POS pos) throws JWNLException {
 		return getLemmas(getHyponyms(word, sense, pos));
 	}
 
-	public ArrayList<Synset> getListofSynsets(PointerTargetNodeList list, ArrayList<Synset> result) {
+	
+	public List<Synset> getCohyponyms(long offset){
+		List<Synset> fatherList; 	
+		List<Synset> childList = new ArrayList<>();	
+		
+		try {
+			fatherList = getHypernyms(offset);
+			for (Synset father: fatherList){
+				childList.addAll(getHyponyms(father));
+			}		
+		} catch (JWNLException e) {
+			e.printStackTrace();
+		}
+		return childList;
+	}
+	
+	/**
+	 * Este método obtiene el listado de Synsets del tipo PointerTargetNodeList
+	 * @param list - Tipo que contiene el listado de Nodos de la ontología
+	 * @param result 
+	 * @return Devuelve el listado de Synsets
+	 */
+	public List<Synset> getListofSynsets(PointerTargetNodeList list, List<Synset> result) {
 
-		Iterator it = list.iterator();
+		Iterator<?> it = list.iterator();
 		while (it.hasNext()) {
 			PointerTargetNode listaux = (PointerTargetNode) it.next();
 			if (!result.contains(listaux.getSynset())) {
@@ -297,23 +475,31 @@ public class WordnetLibrary {
 		return result;
 	}
 
-	public ArrayList<String> getListofSynsetsToString(ArrayList<Synset> result) {
-		ArrayList<String> listsynsets = new ArrayList<String>();
+	/**
+	 * Este método obtiene el de palabras dado un listado de Synsets
+	 * @param result - Listado de synsets
+	 * @return Devuelve el listado de palabras
+	 */
+	public List<String> getListofSynsetsToString(List<Synset> result) {
+		ArrayList<String> listsynsets = new ArrayList<>();
 		for (int i = 0; i < result.size(); i++) {
 			listsynsets.add(result.get(i).toString());
 		}
 		return listsynsets;
 	}
 
-	public ArrayList<String> getListofWords(PointerTargetNodeList list, ArrayList<String> result) {
-
-		Iterator it = list.iterator();
+	/**
+	 * Este método obtiene el listado de palabras del tipo PointerTargetNodeList
+	 * @param list - Tipo que contiene el listado de Nodos de la ontología
+	 * @param result -Listado de synsets
+	 * @return Devuelve el listado de palabras
+	 */
+	public List<String> getListofWords(PointerTargetNodeList list, List<String> result) {
+		Iterator<?> it = list.iterator();
 		while (it.hasNext()) {
 			PointerTargetNode listaux = (PointerTargetNode) it.next();
-			// System.out.print("\nLISTA:\n"+listaux.getSynset());
 			Word[] wArr = listaux.getSynset().getWords();
 			for (Word w : wArr) {
-				// System.out.print("\t" + w.getLemma().replace("_", " "));
 				if (!result.contains(w.getLemma())) {
 					result.add(w.getLemma());
 				}
@@ -322,115 +508,22 @@ public class WordnetLibrary {
 		return result;
 	}
 
-	public ArrayList<Synset> getHolonyms(Synset synset) throws JWNLException {
-
-		ArrayList<Synset> holonyms = new ArrayList<Synset>();
-		PointerTargetNodeList listpartof = PointerUtils.getInstance().getPartHolonyms(synset);
-		PointerTargetNodeList listmemberof = PointerUtils.getInstance().getMemberHolonyms(synset);
-		PointerTargetNodeList listsubtanceof = PointerUtils.getInstance().getPartHolonyms(synset);
-
-		if (!holonyms.containsAll(getListofSynsets(listpartof, holonyms)))
-			holonyms.addAll(getListofSynsets(listpartof, holonyms));
-		if (!holonyms.containsAll(getListofSynsets(listmemberof, holonyms)))
-			holonyms.addAll(getListofSynsets(listmemberof, holonyms));
-		if (!holonyms.containsAll(getListofSynsets(listsubtanceof, holonyms)))
-			holonyms.addAll(getListofSynsets(listsubtanceof, holonyms));
-		return holonyms;
-	}
-
-	public ArrayList<Synset> getHolonyms(long offset) throws JWNLException {
-		Synset synset = getSynset(offset);
-		return getHolonyms(synset);
-	}
-
-	public ArrayList<Synset> getHolonyms(String word, int sense, POS pos) throws JWNLException {
-		Synset synset = getSynset(word, pos, sense);
-		return getHolonyms(synset);
-	}
-
-	public ArrayList<String> getHolonymsWords(Synset synset) throws JWNLException {
-
-		ArrayList<String> holonyms = new ArrayList<String>();
-		PointerTargetNodeList listpartof = PointerUtils.getInstance().getPartHolonyms(synset);
-		PointerTargetNodeList listmemberof = PointerUtils.getInstance().getMemberHolonyms(synset);
-		PointerTargetNodeList listsubtanceof = PointerUtils.getInstance().getPartHolonyms(synset);
-
-		if (!holonyms.containsAll(getListofWords(listpartof, holonyms)))
-			holonyms.addAll(getListofWords(listpartof, holonyms));
-		if (!holonyms.containsAll(getListofWords(listmemberof, holonyms)))
-			holonyms.addAll(getListofWords(listmemberof, holonyms));
-		if (!holonyms.containsAll(getListofWords(listsubtanceof, holonyms)))
-			holonyms.addAll(getListofWords(listsubtanceof, holonyms));
-		return holonyms;
-	}
-
-	public ArrayList<String> getHolonymsWords(long offset) throws JWNLException {
-		Synset synset = getSynset(offset);
-		return getHolonymsWords(synset);
-
-	}
-
-	public ArrayList<String> getHolonymsWords(String word, int sense, POS pos) throws JWNLException {
-		Synset synset = getSynset(word, pos, sense);
-		return getHolonymsWords(synset);
-	}
-
-	public ArrayList<Synset> getMeronyms(Synset synset) throws JWNLException {
-		ArrayList<Synset> meronyms = new ArrayList<Synset>();
-		PointerTargetNodeList listpartof = PointerUtils.getInstance().getPartMeronyms(synset);
-		PointerTargetNodeList listmemberof = PointerUtils.getInstance().getMemberMeronyms(synset);
-		PointerTargetNodeList listsubtanceof = PointerUtils.getInstance().getPartMeronyms(synset);
-
-		if (!meronyms.containsAll(getListofSynsets(listpartof, meronyms)))
-			meronyms.addAll(getListofSynsets(listpartof, meronyms));
-		if (!meronyms.containsAll(getListofSynsets(listmemberof, meronyms)))
-			meronyms.addAll(getListofSynsets(listmemberof, meronyms));
-		if (!meronyms.containsAll(getListofSynsets(listsubtanceof, meronyms)))
-			meronyms.addAll(getListofSynsets(listsubtanceof, meronyms));
-		return meronyms;
-	}
-
-	public ArrayList<Synset> getMeronyms(long offset) throws JWNLException {
-		Synset synset = getSynset(offset);
-		return getMeronyms(synset);
-	}
-
-	public ArrayList<Synset> getMeronyms(String word, int sense, POS pos) throws JWNLException {
-		Synset synset = getSynset(word, pos, sense);
-		return getMeronyms(synset);
-	}
-
-	public ArrayList<String> getMeronymsWords(Synset synset) throws JWNLException {
-		ArrayList<String> meronyms = new ArrayList<String>();
-		PointerTargetNodeList listpartof = PointerUtils.getInstance().getPartMeronyms(synset);
-		PointerTargetNodeList listmemberof = PointerUtils.getInstance().getMemberMeronyms(synset);
-		PointerTargetNodeList listsubtanceof = PointerUtils.getInstance().getPartMeronyms(synset);
-
-		if (!meronyms.containsAll(getListofWords(listpartof, meronyms)))
-			meronyms.addAll(getListofWords(listpartof, meronyms));
-		if (!meronyms.containsAll(getListofWords(listmemberof, meronyms)))
-			meronyms.addAll(getListofWords(listmemberof, meronyms));
-		if (!meronyms.containsAll(getListofWords(listsubtanceof, meronyms)))
-			meronyms.addAll(getListofWords(listsubtanceof, meronyms));
-		return meronyms;
-	}
-
-	public ArrayList<String> getMeronymsWords(long offset) throws JWNLException {
-		Synset synset = getSynset(offset);
-		return getMeronymsWords(synset);
-	}
-
-	public ArrayList<String> getMeronymsWords(String word, int sense, POS pos) throws JWNLException {
-		Synset synset = getSynset(word, pos, sense);
-		return getMeronymsWords(synset);
-	}
-
+	/**
+	 * Este método comprueba si un Synset es el nodo raíz de la ontología
+	 * @param s - Objeto Synset de la ontología
+	 * @return Devuelve true si es el nodo raíz y false si no lo es.
+	 */
 	public boolean isEntityNode(Synset s) {
 		return ((s.getWord(0).getLemma().equals("entity")) ? true : false);
 	}
 
-	public ArrayList<Synset> getPathToEntity(Synset s) {
-		ArrayList<Synset> nodepath = new ArrayList<Synset>();
+	/**
+	 * Este método obtiene el listado de Synsets desde un determinado nodo a la raíz
+	 * @param s - Objeto Synset de la ontología
+	 * @return Devuelve el listado de nodos hasta la raíz
+	 */
+	public List<Synset> getPathToEntity(Synset s) {
+		ArrayList<Synset> nodepath = new ArrayList<>();
 		try {
 			if (isEntityNode(s)) {
 				nodepath.add(s);
@@ -449,8 +542,14 @@ public class WordnetLibrary {
 		return nodepath;
 	}
 
-	public ArrayList<Synset> getPathBetweenSynsets(Synset synset1, Synset synset2) {
-		ArrayList<Synset> pathsynsets = new ArrayList<Synset>();
+	/**
+	 * Este método obtiene el listado de synsets entre dos synsets de las ontologías
+	 * @param synset1 - Objeto Synset de la ontología
+	 * @param synset2 - Objeto Synset de la ontología
+	 * @return Devuelve el listado de synsets
+	 */
+	public List<Synset> getPathBetweenSynsets(Synset synset1, Synset synset2) {
+		List<Synset> pathsynsets = new ArrayList<>();
 		try {
 			if (isEntityNode(synset1) && isEntityNode(synset2)) {
 				pathsynsets.add(synset1);
@@ -472,9 +571,7 @@ public class WordnetLibrary {
 
 			for (int i = 0; i < l.size(); i++) {
 				PointerTargetNode p = (PointerTargetNode) l.get(i);
-				// System.out.print("\nCURRENT:"+ p.getSynset()+"\n");
 				pathsynsets.add(p.getSynset());
-				// System.out.print("\nNODE"+i+":"+p.getSynset().getWord(0).getLemma());
 			}
 		} catch (JWNLException e) {
 			e.printStackTrace();
@@ -482,20 +579,35 @@ public class WordnetLibrary {
 		return pathsynsets;
 	}
 
+	/**
+	 * Este método devuelve el número de enlaces entre dos synsets
+	 * @param s1 - Objeto Synset de la ontología
+	 * @param s2 - Objeto Synset de la ontología
+	 * @return Devuelve el número de enlaces entre los synsets
+	 */
 	public int getNumLinksBetweenSynsets(Synset s1, Synset s2) {
 		return getPathBetweenSynsets(s1, s2).size() - 1;
 	}
 
-	public int depthOfSynset(Synset a) throws JWNLException {
+	/**
+	 * Este método devuelve la profundidad del Synset
+	 * @param a - Objeto Synset de la ontología
+	 * @return Devuelve el número de profundidad que tiene el synset
+	 */
+	public int depthOfSynset(Synset a) {
 
 		return getPathToEntity(a).size() - 1;
 	}
 
-	public int depthOfSynset(Synset a, LinkedHashMap<Synset, ArrayList<Synset>> tree) throws JWNLException {
+	/**
+	 * Este método calcula la profundidad de un Synset dentro de un subárbol
+	 * @param a  - Objeto Synset de la ontología
+	 * @param tree - Subárbol de Wordnet
+	 * @return Devuelve el número de profundidad que tiene el synset dentro del subárbol
+	 */
+	public int depthOfSynset(Synset a, LinkedHashMap<Synset, List<Synset>> tree) {
 
-		int depth = 0;
-		Map.Entry<Synset, ArrayList<Synset>> rootnode = (new ArrayList<Map.Entry<Synset, ArrayList<Synset>>>(
-				tree.entrySet())).get(0);
+		Map.Entry<Synset, List<Synset>> rootnode = (new ArrayList<Map.Entry<Synset, List<Synset>>>(tree.entrySet())).get(0);
 		if (!tree.containsKey(a))
 			return -1;
 		if (rootnode.getKey().equals(a))
@@ -505,27 +617,36 @@ public class WordnetLibrary {
 
 	}
 
-	public int depthnodes(Synset a, ArrayList<Synset> nodeslevel, int depth,
-			LinkedHashMap<Synset, ArrayList<Synset>> tree) {
+	/**
+	 * Este método calcula la profundidad para los nodos recibidos como parámetros dentro del subárbol
+	 * @param a - Objeto Synset de la ontología
+	 * @param list - Vector de nodos de la ontología del nivel a examinar
+	 * @param depth - Número que representa la profundidad del subárbol
+	 * @param tree - Subárbol de wordndet  
+	 * @return Devuelve el número que representa la profundidad dentro del subárbol
+	 */
+	public int depthnodes(Synset a, List<Synset> list, int depth,
+			LinkedHashMap<Synset, List<Synset>> tree) {
 
-		// System.out.print("\nENTRA NODOS HIJOS->"+ nodeslevel.size()+" depth"+depth+"
-		// synset a "+ a.getWord(0).getLemma()+ a.getOffset()+"\n");
-		ArrayList<Synset> newlevelnodes = new ArrayList<Synset>();
-		if (nodeslevel.size() > 0) {
-			for (Synset node : nodeslevel) {
-				ArrayList<Synset> hijos = tree.get(node);
+		ArrayList<Synset> newlevelnodes = new ArrayList<>();
+		if (list.isEmpty()) {
+			for (Synset node : list) {
+				List<Synset> hijos = tree.get(node);
 				if (hijos != null)
 					newlevelnodes.addAll(hijos);
 			}
-			if (!nodeslevel.contains(a)) {
-				// System.out.print("Not Contains"+depth);
+			if (!list.contains(a)) {
 				return depthnodes(a, newlevelnodes, depth + 1, tree);
 			}
 		}
-		// System.out.print("DEpTHNODOS->"+depth);
 		return depth;
 	}
 
+	/**
+	 * Este método calcula el número de nodos hasta el synset raíz de la ontología
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve el número de nodos existentetes desde el nodo recibido como parámetro hasta la raíz de la ontología
+	 */
 	public int getNodesToEntity(Synset synset) {
 		if (synset.getWord(0).toString().equalsIgnoreCase("entity"))
 			return 1;
@@ -539,30 +660,39 @@ public class WordnetLibrary {
 		return -1;
 	}
 
-	public Synset getLeastCommonSubsumer(Synset a, Synset b) throws JWNLException {
+	/**
+	 * Este método obtiene el synset que representa el LCS entre dos synsets
+	 * @param a - Objeto Synset1 de la ontología
+	 * @param b - Objeto Synset2 de la ontología
+	 * @return Devuelve un objeto del tipo Synset que representa al LCS de ambos synsets
+	 * @throws JWNLException
+	 */
+	public Synset getLeastCommonSubsumer(Synset a, Synset b){
 
-		int depth, depthMin;
+		int depth;
+		int depthMin;
 		Synset lcssynset = null;
-
-		ArrayList<Synset> nodepath = getPathBetweenSynsets(a, b);
-		// System.out.print("\n\n Calculamos el PATH DE A a B:"+path);
+		List<Synset> nodepath = getPathBetweenSynsets(a, b);
 		depthMin = 10000;
 
 		for (Synset node : nodepath) {
-			// System.out.print("\nSYNSET:"+node.getWord(0).getLemma()+"----->"+depthOfSynset(node)+"\n");
-			// depth = depthOfSynset(node);
+
 			depth = getNodesToEntity(node);
 			if (depth <= depthMin) {
 				depthMin = depth;
 				lcssynset = node;
 			}
-
 		}
 		return lcssynset;
 	}
-
+	
+	/**
+	 * Este método devuelve el número de elementos del primer conjunto que no se encuentran en el segundo conjunto
+	 * @param a - Conjunto de Synsets
+	 * @param b - Conjunto de Synsets
+	 * @return Devuelve el número de elementos del primer conjunto que no se encuentran en el segundo conjunto
+	 */
 	public int NotContainsFirstInSecond(HashSet<Synset> a, HashSet<Synset> b) {
-		// TODO Auto-generated method stub
 		int num = 0;
 		for (Synset syn : a) {
 
@@ -573,6 +703,12 @@ public class WordnetLibrary {
 		return num;
 	}
 
+	/**
+	 * Este método permite obtener el número de elementos en la intersección entre los dos conjuntos
+	 * @param a - Conjunto de Synsets
+	 * @param b - Conjunto de Synsets
+	 * @return Devuelve el número de elementos en la intersección entre ambos conjuntos
+	 */
 	public int Intersection(HashSet<Synset> a, HashSet<Synset> b) {
 		int num = 0;
 		for (Synset syn : a) {
@@ -584,29 +720,14 @@ public class WordnetLibrary {
 		return num;
 	}
 
-	/* Repasar valores del árbol */
-	/*
-	 * public HashMap<Long, Synset> getHypernymTree(Synset synset){
-	 * 
-	 * HashMap<Long, Synset> list = new HashMap<Long, Synset>(); try {
-	 * PointerTargetTree tree = PointerUtils.getInstance().getHypernymTree(synset);
-	 * 
-	 * @SuppressWarnings("unchecked") List<PointerTargetNodeList> branchList =
-	 * tree.toList(); for ( PointerTargetNodeList nodeList : branchList ){ for ( int
-	 * i = 0; i < nodeList.size(); i++ ){ PointerTargetNode node =
-	 * (PointerTargetNode) nodeList.get(i); Synset s = node.getSynset(); //
-	 * System.out.println("WORD: " + s.getWord(0).getLemma());
-	 * //System.out.println("KEY: " + s.getKey() +" " + list.get(s.getKey())+"\n");
-	 * if (list.get(s.getKey())==null){ list.put((Long)s.getKey(), s);
-	 * //System.out.println("**: " + s + "\n");
-	 * 
-	 * } } } } catch (JWNLException e) { e.printStackTrace(); } return list; }
+	/**
+	 * Este método permite obtener el subárbol de hiperónimos desde el Synset raíz hasta el Synset que se recibe como parámetros
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve el subárbol de hiperónimos
 	 */
-
-	/* Repasar valores del árbol */
 	public HashSet<Synset> getHypernymTreeList(Synset synset) {
 
-		HashSet<Synset> list = new HashSet<Synset>();
+		HashSet<Synset> list = new HashSet<>();
 		try {
 			PointerTargetTree tree = PointerUtils.getInstance().getHypernymTree(synset);
 			@SuppressWarnings("unchecked")
@@ -615,7 +736,6 @@ public class WordnetLibrary {
 				for (int i = 0; i < nodeList.size(); i++) {
 					PointerTargetNode node = (PointerTargetNode) nodeList.get(i);
 					Synset s = node.getSynset();
-					// System.out.print("S->"+s+"\n");
 					list.add(s);
 				}
 			}
@@ -625,10 +745,14 @@ public class WordnetLibrary {
 		return list;
 	}
 
-	/* Repasar valores del árbol */
+	/**
+	 * Este método permite obtener el subárbol de hipónimos desde el Synset raíz hasta el Synset que se recibe como parámetros
+	 * @param synset - Objeto Synset de la ontología
+	 * @return Devuelve el subárbol de hipónimos
+	 */
 	public HashSet<Synset> getHyponymsTreeList(Synset synset) {
 
-		HashSet<Synset> list = new HashSet<Synset>();
+		HashSet<Synset> list = new HashSet<>();
 		try {
 			PointerTargetTree tree = PointerUtils.getInstance().getHyponymTree(synset);
 			@SuppressWarnings("unchecked")
@@ -646,46 +770,64 @@ public class WordnetLibrary {
 		return list;
 	}
 
-	public ArrayList<Synset> RecorrerNodos(int pos, ArrayList<Synset> hijos, int altura,
-			LinkedHashMap<Synset, ArrayList<Synset>> treeResult) throws JWNLException {
+	/***
+	 * Este método permite obtener el listado de Synsets de la siguiente altura
+	 * @param pos - Nivel que se esta calculando 
+	 * @param hijos - Listado de Synsets del nivel superior
+	 * @param altura - Altura total que se desea calcular del subárbol
+	 * @param treeResult - Map que representa al subárbol, donde cada elemento del map representa al Synset y a los hijos de dicho synset
+	 * @return Devuelve el listado de Synsets del siguiente nivel
+	 * @throws JWNLException
+	 */
+	private List<Synset> recorrerNodos(int pos, List<Synset> hijos, int altura,
+			LinkedHashMap<Synset, List<Synset>> treeResult) throws JWNLException {
 
-		if (pos < hijos.size()) {
+		if (pos < hijos.size() && altura >= 0) {
 
-			if (altura >= 0) {
-
-				ArrayList<Synset> hyponyms = getHyponyms(hijos.get(pos));
+				List<Synset> hyponyms = getHyponyms(hijos.get(pos));
 				if (altura == 0) {
-					treeResult.put(hijos.get(pos), new ArrayList<Synset>());
+					treeResult.put(hijos.get(pos), new ArrayList<>());
 				} else {
 					treeResult.put(hijos.get(pos), hyponyms);
 					getSubarbolWordnet(hijos.get(pos), altura, treeResult);
 				}
 
-				RecorrerNodos(pos + 1, hijos, altura, treeResult);
-			}
+				recorrerNodos(pos + 1, hijos, altura, treeResult);
+			
 
 		}
 		return hijos;
 	}
 
-	public LinkedHashMap<Synset, ArrayList<Synset>> getSubarbolWordnet(Synset s, int altura,
-			LinkedHashMap<Synset, ArrayList<Synset>> treeResult) throws JWNLException {
-		ArrayList<Synset> hijos = new ArrayList<Synset>();
+	/**
+	 * Este método permite obtener el subárbol para una determinada altura
+	 * @param s - Objeto Synset de la ontología
+	 * @param altura - Altura para la que se desea calcular el subárbol
+	 * @param treeResult - Subárbol calculado dentro de Wordnet 
+	 * @return Devuelve el Map que representa al subárbol dada dicha altura
+	 * @throws JWNLException
+	 */
+	public LinkedHashMap<Synset, List<Synset>> getSubarbolWordnet(Synset s, int altura,
+			LinkedHashMap<Synset, List<Synset>> treeResult) throws JWNLException {
+		
 
 		if (altura >= 0) {
-			hijos = getHyponyms(s);
-			treeResult.put(s, hijos);
+			treeResult.put(s, getHyponyms(s));
 			altura--;
-			hijos = RecorrerNodos(0, hijos, altura, treeResult);
+			recorrerNodos(0, getHyponyms(s), altura, treeResult);
 		}
 		return treeResult;
 
 	}
 	
-	public LinkedHashMap<Synset, ArrayList<Synset>> getSubarbolWordnet(Synset s){
-		LinkedHashMap<Synset, ArrayList<Synset>> tree = new  LinkedHashMap<Synset, ArrayList<Synset>>();
+	/**
+	 * Este método permite obtener todo el subárbol desde un Synset
+	 * @param s - Objeto Synset de la ontología
+	 * @return Devuelve el Map que representa al subárbol entero desde dicho Synset de la ontología
+	 */
+	public LinkedHashMap<Synset, List<Synset>> getSubarbolWordnet(Synset s){
+		LinkedHashMap<Synset, List<Synset>> tree = new  LinkedHashMap<>();
 		HashSet<Synset> synsets =getHyponymsTreeList(s);
-		System.out.print("SUBTREE->"+synsets+"\n");
 		try {
 		for(Synset s1:synsets) {
 			
@@ -693,29 +835,34 @@ public class WordnetLibrary {
 			
 		}
 		} catch (JWNLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.print("TRUE TREE"+tree+"\n");
 		return tree;
 	}
 	
-	public void printTree(Map<Synset, ArrayList<Synset>> treeResult) {
-		treeResult.forEach((key, value) -> System.out.println(key.getWord(0).getLemma() + ":" + value));
+	/**
+	 * Este método nos permite pintar el subárbol de la ontología
+	 * @param treeResult - Map que representa al subárbol
+	 */
+	public void printTree(Map<Synset, List<Synset>> treeResult) {
+		treeResult.forEach((key, value) -> logger.info(key.getWord(0).getLemma() + ":" + value));
 	}
 
-	public LinkedHashMap<Synset, ArrayList<Synset>> convertTreeToMap(Tree tree) throws JWNLException {
-		LinkedHashMap<Synset, ArrayList<Synset>> treeResult = new LinkedHashMap<Synset, ArrayList<Synset>>();
-		ArrayList<com.proyectoapi.model.TreeNode> nodes = tree.getNodes();
+	/**
+	 * Este método permite hacer la conversión del objeto Tree al Map que representa al subárbol, este método se emplea para obtener el Subárbol que se recibe como entrada en las llamadas
+	 * @param tree - Objeto de tipo Tree que permite obtener el subárbol desde la entrada
+	 * @return Devuelve el Map que representa el subárbol
+	 * @throws JWNLException
+	 */
+	public LinkedHashMap<Synset, List<Synset>> convertTreeToMap(TreeWordnet tree) throws JWNLException {
+		LinkedHashMap<Synset, List<Synset>> treeResult = new LinkedHashMap<>();
+		ArrayList<com.proyectoapi.model.NodeWordnet> nodes = tree.getNodes();
 		for (int i = 0; i < nodes.size(); i++) {
-			// System.out.print("nodo keyset"+nodes.get(i).getKeysynset()+"\n");
-			// System.out.print("hijos"+nodes.get(i).getHijos()+"\n\n");
+	
 			ArrayList<Long> hijos = nodes.get(i).getHijos();
-			ArrayList<Synset> synsetSons = new ArrayList<Synset>();
+			ArrayList<Synset> synsetSons = new ArrayList<>();
 			for (int j = 0; j < hijos.size(); j++) {
 
-				System.out.print("HIJOS" + hijos.get(j) + "\n\n");
-				// Long l = new Long(hijos.get(i));
 				Synset s = getSynset(hijos.get(j).longValue());
 				synsetSons.add(s);
 			}
@@ -723,52 +870,6 @@ public class WordnetLibrary {
 
 		}
 		return treeResult;
-	}
-
-	public static void main(String[] arg) throws JWNLException {
-		WordnetLibrary w = new WordnetLibrary();
-		// logdescription.info("HOLA CREADO WORDNET");
-
-		final String word = "canis familiaris";
-		final POS pos = POS.NOUN;
-
-		long offset = 2934150;
-		Synset s1 = w.getSynset(offset);
-		System.out.print("S1"+s1+"\n");
-		w.getSubarbolWordnet(s1);
-
-		/*
-		 * Synset s1 = getSynset(offset); System.out.print("SENSES SYNSET\n");
-		 * getSense(s1); System.out.print("\n\nSENSES OFFSET\n"); getSense(offset);
-		 * System.out.print("\n\n\nObtener el synset del offset:"+s1 );
-		 */
-		/*
-		 * System.out.print("TEST"+w.getHypernymsWords("party", 1, POS.NOUN)); long s0
-		 * =2125600, s1=2124272, s3=6422547; Synset kitten= w.getSynset(s0); Synset cat
-		 * = w.getSynset(s1); Synset book =w.getSynset(s3);
-		 *//*
-			 * Synset lcs = w.getLeastCommonSubsumer(kitten,cat);
-			 * System.out.print("LCS->"+lcs); ArrayList<Synset> nodoskitten =
-			 * w.getPathBetweenSynsets(kitten, lcs); ArrayList<Synset> nodoscat =
-			 * w.getPathBetweenSynsets(cat, lcs);
-			 * 
-			 * int numlinks_kitten= w.getNumLinksBetweenSynsets(kitten, lcs); int
-			 * numlinks_cat = w.getNumLinksBetweenSynsets(cat, lcs);
-			 */
-		// System.out.print("NUMERO DE ENLACES a KITTEN->"+numlinks_kitten+"\n"+"NUMERO
-		// DE ENLACES a KITTEN->"+numlinks_cat);
-		// LinkedHashMap<Synset, ArrayList<Synset>> tree = new LinkedHashMap<Synset,
-		// ArrayList<Synset>>();
-		// tree = w.getSubarbolWordnet(cat,4, tree); //Testado con cat
-		// w.printTree(tree);
-		// System.out.print("\nSUBARBOL:"+ getSubarbolWordnet(cat,2));
-		/*
-		 * LinkedHashMap<Synset,ArrayList<Synset>> treeResult= new
-		 * LinkedHashMap<Synset,ArrayList<Synset>>(); treeResult =
-		 * w.getSubarbolWordnet(cat,3, treeResult);
-		 * System.out.print("\n\nPINTAR ARBOL RESULTADO\n\n"); treeResult.forEach((key,
-		 * value) -> System.out.println(key.getWord(0).getLemma() + ":" + value));
-		 */
 	}
 
 }
