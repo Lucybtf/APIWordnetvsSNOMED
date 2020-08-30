@@ -1,15 +1,27 @@
 package com.proyectoapi.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
+
+/**
+ * Class DistancesSnomed: Esta clase calcula las distancias semánticas para la ontología de Snomed CT.
+ * @author Lucía Batista Flores
+ * @version 1.0
+ */
 
 public class DistancesSnomed {
 
 	SnomedCTLibrary snomed = new SnomedCTLibrary();
 
-	public double wuSimilarity(long idConcept1, long idConcept2) {
+	/**
+	 * Este método calcula la similitud semántica de Wu and Palmer para dos conceptos de Snomed CT
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la similitud semántica de Wu and Palmer entre dos conceptos
+	 */
+	public double getwpSimilarity(long idConcept1, long idConcept2) {
 
 		HashMap<Long, Integer> id1 = snomed.getAncestorsDistanciaMinima(idConcept1);
 		HashMap<Long, Integer> id2 = snomed.getAncestorsDistanciaMinima(idConcept2);
@@ -21,7 +33,8 @@ public class DistancesSnomed {
 		}
 		long idLCS = -1;
 		int distanciaLCS = Integer.MAX_VALUE;
-		for (Long id : id1.keySet())
+		Set<Long> set = id1.keySet();
+		for (Long id : set)
 			if (id2.containsKey(id) && (distanciaLCS > id1.get(id) + id2.get(id))) {
 				idLCS = id;
 				distanciaLCS = id1.get(id) + id2.get(id);
@@ -34,11 +47,17 @@ public class DistancesSnomed {
 
 	}
 
-	public double getWuSimilaritySubTree(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
-		HashMap<Long, Integer> id1 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept1, subgraph);
-		System.out.print("\nANCESTORs id1"+id1+"\n");
-		HashMap<Long, Integer> id2 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept2, subgraph);
-		System.out.print("\nANCESTORs id2"+id2+"\n");
+	/**
+	 * Este método calcula la similitud semántica de Wu and Palmer para dos conceptos dentro de un subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @param subtree - Subárbol de Snomed CT
+	 * @return Devuelve el valor de la similitud semántica de Wu and Palmer 
+	 */
+	public double getWuSimilaritySubTree(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subtree) {
+		HashMap<Long, Integer> id1 = snomed.getAncestrosDistanciaMinimaSubTreeSnomed(idConcept1, subtree);
+		HashMap<Long, Integer> id2 = snomed.getAncestrosDistanciaMinimaSubTreeSnomed(idConcept2, subtree);
+		
 		if (id1.size() > id2.size()) {
 			HashMap<Long, Integer> ancestresTemporal = id1;
 			id1 = id2;
@@ -46,75 +65,128 @@ public class DistancesSnomed {
 		}
 		long idLCS = -1;
 		int distanciaLCS = Integer.MAX_VALUE;
-		for (Long id : id1.keySet()) {
-			System.out.print("ENTRA");
+		Set<Long> set = id1.keySet();
+		for(Long id:set) {
 			if (id2.containsKey(id) && (distanciaLCS > id1.get(id) + id2.get(id))) {
 				idLCS = id;
 				distanciaLCS = id1.get(id) + id2.get(id);
 			}
 		}
-		System.out.print("\nLCS"+idLCS+ "distance"+distanciaLCS+"\n");
 		if (idLCS == -1)
 			return 0;
-		
-		if (subgraph.containsKey(idLCS)) {
-			
-			int distancia = snomed.getAncestorsMaxDistanceSubGraph(idLCS, subgraph);
-			System.out.print("distanciamax"+distancia);
+		if (subtree.containsKey(idLCS)) {
+			int distancia = snomed.getMaxDistanceToEntitySubTreeSnomed(idLCS, subtree);
 			return ((double) 2 * distancia / (double) (distanciaLCS + 2 * distancia));
-		} else
-			return 0;
+		} 
+		return 0;
 	}
 
+	/**
+	 * Este método calcula la similitud semántica de Wu and Palmer para dos conceptos dentro de un subárbol completo
+	 * @param idConceptroot - Número de tipo long que identifica de manera única al concepto raíz del subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la similitud semántica de Wu and Palmer para el subárbol completo
+	 */
 	public  double getWuSimilaritySubTree(long idConceptroot, long idConcept1, long idConcept2) {
-		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
-		//double res =getWuSimilaritySubTree(idConcept1, idConcept2, subtree);
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubTreeSnomed(idConceptroot);
 		return getWuSimilaritySubTree(idConcept1, idConcept2, subtree);
 	}
 	
+	/**
+	 * Este método calcula la distancia semántica de Wu and Palmer para dos conceptos
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la distancia semántica de Wu and Palmer entre dos conceptos de Snomed CT
+	 */
+	public double getdistanceWP(long idConcept1, long idConcept2) {
+		return 1 - getwpSimilarity(idConcept1, idConcept2);
+	}
+	
+	/**
+	 * Este método calcula la distancia semántica de Wu and Palmer para dos conceptos dentro de un subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @param subtree - Subárbol de Snomed CT
+	 * @return Devuelve el valor de la distancia semántica de Wu and Palmer entre dos conceptos de Snomed CT de un subárbol
+	 */
+	public double getdistanceWP(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subtree) {
+		return 1 - getWuSimilaritySubTree(idConcept1, idConcept2, subtree);
+	}
+	
+	/**
+	 * Este método calcula la distancia semántica de Wu and Palmer para dos conceptos dentro de un subárbol completo
+	 * @param idConceptroot - Número de tipo long que identifica de manera única al concepto raíz del subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la distancia semántica de Wu and Palmer entre dos conceptos de Snomed CT de un subárbol completo
+	 */
+	public double getdistanceWP(long idConceptroot, long idConcept1, long idConcept2) {
+		return 1 - getWuSimilaritySubTree(idConceptroot, idConcept1, idConcept2);
+	}
+	
+	/**
+	 * Este método calcula la distancia de Sanchez basada en conjuntos entre dos conceptos de Snomed CT
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la distancia semántica de Sanchez entre dos conceptos de Snomed CT
+	 */
 	public double SanchezDistance(long idConcept1, long idConcept2) {
 		Set<Long> id1 = snomed.getAncestorsDistanciaMinima(idConcept1).keySet();
-		System.out.print("\nSET1->"+id1+"\n");
 		Set<Long> id2 = snomed.getAncestorsDistanciaMinima(idConcept2).keySet();
-		System.out.print("\nSET2->"+id1+"\n");
 
 		int numinsideAinB = snomed.NotContainsFirstInSecond(id1, id2);
 		int numinsideBinA = snomed.NotContainsFirstInSecond(id2, id1);
 		int intersection = snomed.Intersection(id1, id2);
 
-		double num_frac = (double) (numinsideAinB + numinsideBinA)
+		double numfrac = (double) (numinsideAinB + numinsideBinA)
 				/ (double) (numinsideAinB + numinsideBinA + intersection);
-		double distance_sanchez = Math.log10(1 + num_frac) / Math.log10(2);
-		return distance_sanchez;
-	}
-
-	public double SanchezDistanceSubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
-		Set<Long> id1 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept1, subgraph).keySet();
-		System.out.print("\nID1->" + id1);
-		Set<Long> id2 = snomed.getAncestrosDistanciaMinimaSubGraph(idConcept2, subgraph).keySet();
-		System.out.print("\nID1->" + id2);
-
-		int numinsideAinB = snomed.NotContainsFirstInSecond(id1, id2);
-		int numinsideBinA = snomed.NotContainsFirstInSecond(id2, id1);
-		int intersection = snomed.Intersection(id1, id2);
-		System.out.print("\nNUMSA->" + numinsideAinB+ "NUMSB->"+numinsideBinA+"INT->"+intersection);
-
-		double num_frac = (double) (numinsideAinB + numinsideBinA)
-				/ (double) (numinsideAinB + numinsideBinA + intersection);
-		double distance_sanchez = Math.log10(1 + num_frac) / Math.log10(2);
-		return distance_sanchez;
-	}
-
 	
+		return Math.log10(1 + numfrac) / Math.log10(2);
+	}
+
+	/**
+	 * Este método calcula la diatancia de Sanchez basada en conjuntos entre dos conceptos de Snomed CT de un subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @param subtree - Subárbol de Snomed CT
+	 * @return Devuelve el valor de la distancia semántica de Sanchez entre dos conceptos de Snomed CT de un subárbol
+	 */
+	public double SanchezDistanceSubTree(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subtree) {
+		Set<Long> id1 = snomed.getAncestrosDistanciaMinimaSubTreeSnomed(idConcept1, subtree).keySet();
+		Set<Long> id2 = snomed.getAncestrosDistanciaMinimaSubTreeSnomed(idConcept2, subtree).keySet();
+
+		int numinsideAinB = snomed.NotContainsFirstInSecond(id1, id2);
+		int numinsideBinA = snomed.NotContainsFirstInSecond(id2, id1);
+		int intersection = snomed.Intersection(id1, id2);
+
+		double numfrac = (double) (numinsideAinB + numinsideBinA)
+				/ (double) (numinsideAinB + numinsideBinA + intersection);
+
+		return Math.log10(1 + numfrac) / Math.log10(2);
+	}
+
+	/**
+	 * Este método calcula la diatancia de Sanchez basada en conjuntos entre dos conceptos de Snomed CT de un subárbol completo
+	 * @param idConceptroot - Número de tipo long que identifica de manera única al concepto raíz del subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la distancia semántica de Sanchez entre dos conceptos de Snomed CT de un subárbol completo
+	 */
 	public  double getSanchezDistanceSubTree(long idConceptroot, long idConcept1, long idConcept2) {
-		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
-		return SanchezDistanceSubGraph(idConcept1, idConcept2, subtree);
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubTreeSnomed(idConceptroot);
+		return SanchezDistanceSubTree(idConcept1, idConcept2, subtree);
 	}
 	
-	public int getLeafNodes(ArrayList<Long> descendants) {
+	/**
+	 * Este método calcula el número de conceptos que son nodos hoja del subárbol del descendientes
+	 * @param descendantsnode - Listado de descendientes
+	 * @return Devuelve el número de nodos hojas del subárbol
+	 */
+	public int getLeafNodes(List<Long> descendantsnode) {
 		int leafs = 0;
-		for (Long node : descendants) {
-			if (snomed.getHyponymsIdConcepts(node).size() == 0) {
+		for (Long node : descendantsnode) {
+			if (snomed.getHyponymsIdConcepts(node).isEmpty()) {
 				leafs++;
 			}
 		}
@@ -122,55 +194,45 @@ public class DistancesSnomed {
 
 	}
 
-	public int getLeafNodesSubGraph(ArrayList<Long> descendants, LinkedHashMap<Long, Integer> subgraph) {
-		int leafs = 0;
-		for (Long node : descendants) {
-			if (snomed.getHyponymsIdConcepts(node).size() == 0) {
-				leafs++;
-			}
-			if (snomed.getHyponymsIdConcepts(node).size() > 0) {
-				long idchild = snomed.getHyponymsIdConcepts(node).get(0);
-				if (!subgraph.containsKey(idchild)) {
-					leafs++;
-				}
-			}
-		}
-		return leafs;
 
-	}
 
+	/**
+	 * Este método devuelve el valor del IC de Sanchez para un concepto de Snomed CT
+	 * @param idConcept - Número de tipo long que identifica de manera única al concepto
+	 * @return Devuelve el valor del IC de Sanchez para un concepto de Snomed CT
+	 */
 	public double IC_measure(long idConcept) {
-		ArrayList<Long> ancestorsnode = snomed.getAncestors(idConcept);
-		//System.out.print("\nAntecesor->" + ancestorsnode.size());
-		ArrayList<Long> descendantsnode = snomed.getDescendants(idConcept);
+		List<Long> ancestorsnode = snomed.getAncestors(idConcept);
+		List<Long> descendantsnode = snomed.getDescendants(idConcept);
 		int leafs = getLeafNodes(descendantsnode);
-		//System.out.print("\nLEAFS" + leafs + "\n");
-		double icvalue = 0.0;
+
+		double icvalue;
 		double numer = ((double) leafs / (double) ancestorsnode.size() + 1);
 		long entity = 138875005;
 		int denom = snomed.getDescendants(entity).size() + 1;
-		//System.out.print("Entity 352567->" + denom + "\n");
+		
 		double resultdiv = (double) numer / (double) denom;
-		//System.out.print("Probability->" + resultdiv+ "\n");
-
 		icvalue = -Math.log10(resultdiv);
 
 		return icvalue;
 
 	}
 
-	public double IC_measureSubGraph(long idConcept, LinkedHashMap<Long, Integer> subGraph) {
-		ArrayList<Long> ancestorsnode = snomed.getAncestorsSubGraph(idConcept, subGraph); //Mirar porque no coincide
-		System.out.print("Node->"+idConcept+"\nAntecesors"+ancestorsnode+"\n");
-		ArrayList<Long> descendantsnode = snomed.getDescendantsSubGraph(idConcept, subGraph);
-		System.out.print("\nDESCENDANTS NODE"+descendantsnode);
-		int leafs = getLeafNodesSubGraph(descendantsnode, subGraph);
-		System.out.print("\nLEAFS" + leafs + "\n");
-		double icvalue = 0.0;
+	/**
+	 * Este método devuelve el valor del IC de Sanchez para un concepto de un subárbol de Snomed CT
+	 * @param idConcept - Número de tipo long que identifica de manera única al concepto
+	 * @param subtree - Subárbol de Snomed CT
+	 * @return Devuelve el valor del IC de un concepto de Snomed perteneciente a un subárbol
+	 */
+	public double IC_measureSubTree(long idConcept, LinkedHashMap<Long, Integer> subtree) {
+		List<Long> ancestorsnode = snomed.getAncestorsSubTreeSnomed(idConcept, subtree); //Mirar porque no coincide
+		List<Long> descendantsnode = snomed.getDescendantsSubTreeSnomed(idConcept, subtree);
+	
+		int leafs = getLeafNodes(descendantsnode);
+		double icvalue;
 
 		double numer = ((double) leafs / (double) ancestorsnode.size()+1);
-		int denom = subGraph.size() + 1;
-		System.out.print("\nRES->" + numer + "/" + denom + "\n");
+		int denom = subtree.size() + 1;
 		double resultdiv = (double) numer / (double) denom;
 
 		icvalue = -Math.log10(resultdiv);
@@ -178,84 +240,136 @@ public class DistancesSnomed {
 		return icvalue;
 	}
 
+	/**
+	 * Este método devuelve el valor del IC de Sanchez para un concepto de un subárbol completo de Snomed CT
+	 * @param idConceptroot - Número de tipo long que identifica de manera única al concepto raíz del subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @return Devuelve el valor del IC de un concepto de Snomed perteneciente a un subárbol
+	 */
 	public  double getIC_measureSubTree(long idConceptroot, long idConcept1) {
-		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
-		return IC_measureSubGraph(idConcept1, subtree);
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubTreeSnomed(idConceptroot);
+		return IC_measureSubTree(idConcept1, subtree);
 	}
 	
+	/**
+	 * Este método calcula el valor de la distancia de Resnik entre dos conceptos de Snomed CT
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la distancia de Resnik entre dos conceptos de Snomed CT
+	 */
 	public double resnik_Distance(long idConcept1, long idConcept2) {
 		long lcsConcept = snomed.getLCS(idConcept1, idConcept2);
 		return IC_measure(lcsConcept);
 	}
 
-	public double resnik_DistanceSubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
+	/**
+	 * Este método calcula el valor de la distancia de Resnik entre dos conceptos pertenecientes a un subárbol de Snomed CT
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @param subtree - Subárbol de Snomed CT
+	 * @return Devuelve el valor de la distancia de Resnik entre dos conceptos de Snomed CT de un subárbol 
+	 */
+	public double resnik_DistanceSubTree(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subtree) {
 		long lcsConcept = snomed.getLCS(idConcept1, idConcept2);
-		//System.out.print("\nLCS RESNIK" + lcsConcept);
-		if (subgraph.containsKey(lcsConcept))
-			return IC_measureSubGraph(lcsConcept, subgraph);
+		if (subtree.containsKey(lcsConcept))
+			return IC_measureSubTree(lcsConcept, subtree);
 		return 0;
-
 	}
 	
+	/**
+	 * Este método calcula el valor de la distancia de Resnik entre dos conceptos de Snomed pertenecientes a un subárbol completo
+	 * @param idConceptroot - Número de tipo long que identifica de manera única al concepto raíz del subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la distancia de Resnik entre dos conceptos de Snomed CT de un subárbol completo
+	 */
 	public  double getResnik_DistanceSubTree(long idConceptroot, long idConcept1, long idConcept2) {
-		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
-		return resnik_DistanceSubGraph(idConcept1, idConcept2, subtree);
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubTreeSnomed(idConceptroot);
+		return resnik_DistanceSubTree(idConcept1, idConcept2, subtree);
 	}
 
+	/**
+	 * Este método calcula el valor de la distancia semántica de Lin entre dos conceptos de Snomed CT
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return  Devuelve el valor de la distancia de Resnik entre dos conceptos de Snomed CT 
+	 */
 	public double lin_Distance(long idConcept1, long idConcept2) {
-		double resultlin = 0.0, num = 0.0, div = 0.0;
-		num = 2 * resnik_Distance(idConcept1, idConcept2);
+		double resultlin;
+		double div;
+		
 		div = IC_measure(idConcept1) + IC_measure(idConcept2);
-		resultlin = num / div;
+		resultlin = (2 * resnik_Distance(idConcept1, idConcept2)) / div;
 		return resultlin;
 	}
 
-	public double lin_DistanceSubGraph(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subgraph) {
-		System.out.print("DISTANCIA LIN SUBGRAPH\n");
-		double resultlin = 0.0, num = 0.0, div = 0.0;
-		num = 2 * resnik_DistanceSubGraph(idConcept1, idConcept2, subgraph);
-		div = IC_measureSubGraph(idConcept1, subgraph) + IC_measureSubGraph(idConcept2, subgraph);
+	/**
+	 * Este método calcula la distancia semántica de Lin entre dos conceptos pertenecientes a un subárbol de Snomed CT
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @param subtree - Subárbol de Snomed CT
+	 * @return Devuelve el valor de la distancia de Lin entre los dos conceptos de Snomed CT de un subárbol 
+	 */
+	public double lin_DistanceSubTree(long idConcept1, long idConcept2, LinkedHashMap<Long, Integer> subtree) {
+		double resultlin;
+		double num;
+		double div;
+		num = 2 * resnik_DistanceSubTree(idConcept1, idConcept2, subtree);
+		div = IC_measureSubTree(idConcept1, subtree) + IC_measureSubTree(idConcept2, subtree);
 		resultlin = num / div;
 		return resultlin;
 
 	}
 	
+	/**
+	 * Este método calcula la distancia semántica de Lin entre dos conceptos pertenecientes a un subárbol completo de Snomed CT
+	 * @param idConceptroot - Número de tipo long que identifica de manera única al concepto raíz del subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la distancia de Lin entre dos conceptos de Snomed CT de un subárbol completo
+	 */
 	public  double getLin_DistanceSubTree(long idConceptroot, long idConcept1, long idConcept2) {
-		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
-		return lin_DistanceSubGraph(idConcept1, idConcept2, subtree);
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubTreeSnomed(idConceptroot);
+		return lin_DistanceSubTree(idConcept1, idConcept2, subtree);
 	}
 
+	/**
+	 * Este método calcula la distancia semántica de Jiang and Conrath entre dos conceptos de Snomed CT
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return  Devuelve el valor de la distancia de Jiang and Conrath entre dos conceptos de Snomed CT
+	 */
 	public double jianConrath_Distance(long idConcept1, long idConcept2) {
-		double resultjc = 0.0, num = 0.0, div = 0.0, res = 0.0;
+		double div;
 		div = IC_measure(idConcept1) + IC_measure(idConcept2);
-		res = 2 * resnik_Distance(idConcept1, idConcept2);
-		resultjc = div - (2 * resnik_Distance(idConcept1, idConcept2));
-		return resultjc;
+		return div - (2 * resnik_Distance(idConcept1, idConcept2));
 	}
 
+	/**
+	 * Este método calcula la distancia semántica de Jiang and Conrath pertenecientes a un subárbol de Snomed CT
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @param subtree - Subárbol de Snomed CT
+	 * @return Devuelve el valor de la distancia semántica de Jiang and Conrath entre los dos conceptos de Snomed CT de un subárbol 
+	 */
 	public double jianConrath_DistanceSubGraph(long idConcept1, long idConcept2,
-			LinkedHashMap<Long, Integer> subgraph) {
-		double resultjc = 0.0, num = 0.0, div = 0.0, res = 0.0;
-		div = IC_measureSubGraph(idConcept1, subgraph) + IC_measureSubGraph(idConcept2, subgraph);
-		System.out.print("DIV" + div + "\n");
-		res = 2 * resnik_DistanceSubGraph(idConcept1, idConcept2, subgraph);
-		System.out.print("RES" + res + "\n");
-		resultjc = div - (2 * resnik_DistanceSubGraph(idConcept1, idConcept2, subgraph));
-		return resultjc;
+			LinkedHashMap<Long, Integer> subtree) {
+		double div;
+		div = IC_measureSubTree(idConcept1, subtree) + IC_measureSubTree(idConcept2, subtree);
+		return div - (2 * resnik_DistanceSubTree(idConcept1, idConcept2, subtree));
 
 	}
 
+	/**
+	 * Este método calcula la distancia semántica de Jiang and Conrath pertenecientes a un subárbol completo de Snomed CT
+	 * @param idConceptroot - Número de tipo long que identifica de manera única al concepto raíz del subárbol
+	 * @param idConcept1 - Número de tipo long que identifica de manera única al concepto1
+	 * @param idConcept2 - Número de tipo long que identifica de manera única al concepto2
+	 * @return Devuelve el valor de la distancia semántica de Jiang and Conrath entre los dos conceptos de Snomed CT de un subárbol completo
+	 */
 	public  double getJianConrath_DistanceTree(long idConceptroot, long idConcept1, long idConcept2) {
-		LinkedHashMap<Long, Integer> subtree = snomed.getSubGraph(idConceptroot);
+		LinkedHashMap<Long, Integer> subtree = snomed.getSubTreeSnomed(idConceptroot);
 		return jianConrath_DistanceSubGraph(idConcept1, idConcept2, subtree);
 	}
-	/*public static void main(String[] args) throws Exception {
-		DistancesSnomed distancesct = new DistancesSnomed();
-		long id = 123037004, id2 = 22298006, id3 = 80891009, clinical_finding = 404684003, id4 = 57809008,
-				id5 = 123397009, id6 = 5626501, id7 = 56265001, id8 = 25105200, id9 = 417163006, id10 = 123946008,
-				id11 = 301095005, id12 = 301857004;
-		long id4nivel = 92993003;
 
-		System.out.print("DISTANCE" + distancesct.wuSimilarity(id2, id4));
-	}*/
 }
